@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>오목</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">오목</h1>
+
+    <div class="mode-selector">
+      <button class="mode-btn active" id="btn2p" onclick="setMode('2p')">2인 대전</button>
+      <button class="mode-btn" id="btnAI" onclick="setMode('ai')">AI 대전</button>
+    </div>
+
+    <div class="status-bar">
+      <div class="stone-indicator" id="stoneIndicator"></div>
+      <span id="statusText">흑돌 차례</span>
+    </div>
+
+    <div class="board-wrapper">
+      <canvas id="board"></canvas>
+    </div>
+
+    <button class="reset-btn" onclick="resetGame()">새 게임</button>
+  </div>
+
+  <!-- 승리 오버레이 -->
+  <div class="overlay hidden" id="overlay">
+    <div class="overlay-box">
+      <div class="overlay-stone" id="overlayStone"></div>
+      <div class="overlay-text" id="overlayText"></div>
+      <button class="overlay-btn" onclick="resetGame()">다시 하기</button>
+    </div>
+  </div>
+
+  <!-- 삼삼 금지 토스트 -->
+  <div class="toast hidden" id="toast">삼삼 금지</div>
+
+  <script src="game.js"></script>
+</body>
+</html>

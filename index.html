@@ -168,6 +168,91 @@
       margin-bottom: 0.6rem;
     }
 
+    /* 계산기 카드 썸네일 */
+    .card-thumb-calc {
+      width: 100%;
+      height: 160px;
+      background: #1a1a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: filter 0.3s;
+    }
+
+    .card:hover .card-thumb-calc { filter: brightness(1.15); }
+
+    .calc-preview {
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .calc-screen {
+      font-size: 0.7rem;
+      color: #a0a8c0;
+      margin-bottom: 2px;
+    }
+
+    .calc-result {
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .calc-keys {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      width: 140px;
+    }
+
+    .calc-keys span {
+      background: #16213e;
+      color: #fff;
+      border-radius: 6px;
+      padding: 4px 0;
+      font-size: 0.6rem;
+      text-align: center;
+    }
+
+    .calc-keys span.op { background: #e94560; }
+    .calc-keys span.eq { background: #533483; }
+    .calc-keys span.zero { grid-column: span 2; }
+
+    /* 오목 플로팅 버튼 */
+    .minigame-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #1a1612;
+      border: 1px solid rgba(210, 160, 80, 0.4);
+      border-radius: 50px;
+      padding: 0.55rem 1.1rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      color: #d4a843;
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      transition: border-color 0.2s, transform 0.2s;
+      z-index: 100;
+    }
+
+    .minigame-btn:hover {
+      border-color: #d4a843;
+      transform: translateY(-2px);
+    }
+
+    .minigame-btn .stone {
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle at 35% 35%, #555, #111);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
     footer {
       padding: 1.8rem 1.5rem;
       text-align: center;
@@ -225,17 +310,31 @@
         </div>
       </a>
 
-      <!-- 준비중 슬롯 -->
-      <div class="card coming-soon">
-        <img class="card-thumb"
-          src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80&fit=crop"
-          alt="준비중" />
-        <div class="card-body">
-          <div class="coming-badge">COMING SOON</div>
-          <div class="card-title">다음 프로젝트</div>
-          <div class="card-desc">새로운 페이지가 곧 추가됩니다.</div>
+      <!-- 계산기 -->
+      <a class="card" href="./calculator/">
+        <div class="card-thumb card-thumb-calc">
+          <div class="calc-preview">
+            <div class="calc-screen">123 + 456</div>
+            <div class="calc-result">579</div>
+            <div class="calc-keys">
+              <span>AC</span><span>+/-</span><span>%</span><span class="op">÷</span>
+              <span>7</span><span>8</span><span>9</span><span class="op">×</span>
+              <span>4</span><span>5</span><span>6</span><span class="op">−</span>
+              <span>1</span><span>2</span><span>3</span><span class="op">+</span>
+              <span class="zero">0</span><span>.</span><span class="eq">=</span>
+            </div>
+          </div>
         </div>
-      </div>
+        <div class="card-body">
+          <div class="card-tag">계산기</div>
+          <div class="card-title">Calculator</div>
+          <div class="card-desc">사칙연산 지원 계산기. 수식 미리보기 포함.</div>
+          <div class="card-footer">
+            <span class="card-date">2026.04.20</span>
+            <span class="card-arrow">바로가기 →</span>
+          </div>
+        </div>
+      </a>
 
     </div>
   </main>
@@ -243,6 +342,11 @@
   <footer>
     <p>© 2026 DW Pages — Made with Claude</p>
   </footer>
+
+  <a class="minigame-btn" href="./omok/">
+    <span class="stone"></span>
+    미니게임 · 오목
+  </a>
 
 </body>
 </html>

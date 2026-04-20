@@ -1,0 +1,203 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding: 16px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 520px;
+  gap: 12px;
+}
+
+.title {
+  color: #e0c97f;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-shadow: 0 2px 8px rgba(224, 201, 127, 0.4);
+}
+
+.mode-selector {
+  display: flex;
+  gap: 8px;
+  background: #16213e;
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.mode-btn {
+  padding: 8px 24px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #a0a8c0;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.2s;
+}
+
+.mode-btn.active {
+  background: #e94560;
+  color: #fff;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #16213e;
+  padding: 10px 24px;
+  border-radius: 12px;
+  min-width: 200px;
+  justify-content: center;
+}
+
+.stone-indicator {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #555, #000);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+}
+
+.stone-indicator.white {
+  background: radial-gradient(circle at 35% 35%, #fff, #bbb);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+#statusText {
+  color: #e0e0e0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.board-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#board {
+  border-radius: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.reset-btn {
+  padding: 12px 40px;
+  background: #533483;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.2s, transform 0.1s;
+  min-height: 44px;
+}
+
+.reset-btn:hover { background: #6a42a8; }
+.reset-btn:active { transform: scale(0.96); background: #3d2665; }
+
+/* 승리 오버레이 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.overlay.hidden { display: none; }
+
+.overlay-box {
+  background: #16213e;
+  border-radius: 24px;
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+
+.overlay-stone {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #555, #000);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.overlay-stone.white {
+  background: radial-gradient(circle at 35% 35%, #fff, #bbb);
+}
+
+.overlay-text {
+  color: #e0c97f;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.overlay-btn {
+  margin-top: 8px;
+  padding: 12px 36px;
+  background: #e94560;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.2s;
+  min-height: 44px;
+}
+
+.overlay-btn:hover { background: #ff5c7a; }
+
+/* 삼삼 금지 토스트 */
+.toast {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #e94560;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  z-index: 200;
+  box-shadow: 0 4px 20px rgba(233,69,96,0.5);
+  transition: opacity 0.3s;
+}
+
+.toast.hidden {
+  display: none;
+}
