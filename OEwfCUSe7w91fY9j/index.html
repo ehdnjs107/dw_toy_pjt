@@ -283,8 +283,12 @@
   async function uploadFile() {
     if (!selectedFile) return;
 
-    const saveName = document.getElementById('saveNameInput').value.trim();
+    let saveName = document.getElementById('saveNameInput').value.trim();
     if (!saveName) { showMsg('파일명을 입력해주세요.', 'error'); return; }
+    if (!saveName.includes('.')) {
+      const origExt = selectedFile.name.includes('.') ? '.' + selectedFile.name.split('.').pop() : '';
+      saveName = saveName + origExt;
+    }
 
     const btn = document.getElementById('uploadBtn');
     btn.disabled = true;
