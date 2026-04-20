@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>감자카레 레시피</title>
+  <style>
+    :root {
+      --bg: #0f0d0a;
+      --surface: #1a1612;
+      --surface2: #221e18;
+      --border: rgba(210, 160, 80, 0.15);
+      --gold: #d4a843;
+      --gold-light: #f0c060;
+      --text: #f5f0e8;
+      --muted: #9a8870;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .hero {
+      position: relative;
+      height: 55vw;
+      max-height: 340px;
+      overflow: hidden;
+    }
+
+    .hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 60%;
+      filter: brightness(0.7) saturate(1.1);
+      animation: zoomin 14s ease-out forwards;
+    }
+
+    @keyframes zoomin {
+      from { transform: scale(1.08); }
+      to   { transform: scale(1.0); }
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, var(--bg) 100%);
+    }
+
+    .hero-badge-wrap {
+      position: absolute;
+      top: 1.2rem;
+      left: 1.5rem;
+    }
+
+    .back-link {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+      padding: 0.3rem 0.9rem;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .content {
+      padding: 0 1.5rem 4rem;
+      margin-top: -2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .dish-tag {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      border: 1px solid rgba(212,168,67,0.4);
+      padding: 0.2rem 0.7rem;
+      border-radius: 50px;
+      margin-bottom: 0.7rem;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+
+    .dish-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+
+    .info-chips {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.2rem;
+    }
+
+    .chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .chip strong { color: var(--gold-light); margin-right: 0.3rem; }
+
+    .section-title {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .ingredients {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.4rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .ingredient-group { margin-bottom: 1.2rem; }
+    .ingredient-group:last-child { margin-bottom: 0; }
+
+    .ingredient-group-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ingredient-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(210,160,80,0.06);
+      font-size: 0.85rem;
+    }
+
+    .ingredient-row:last-child { border-bottom: none; }
+
+    .ingredient-amount {
+      color: var(--muted);
+      font-size: 0.78rem;
+      flex-shrink: 0;
+    }
+
+    .steps { margin-bottom: 2rem; }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.1rem;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      background: var(--gold);
+      color: #0f0d0a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .step-text {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: var(--text);
+      padding-top: 0.2rem;
+    }
+
+    .step-text em {
+      font-style: normal;
+      color: var(--gold-light);
+      font-weight: 600;
+    }
+
+    .step-img {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 0.8rem;
+      object-fit: cover;
+      max-height: 220px;
+      display: block;
+    }
+
+    .tip-box {
+      background: rgba(212,168,67,0.07);
+      border: 1px solid rgba(212,168,67,0.25);
+      border-radius: 14px;
+      padding: 1.2rem 1.3rem;
+    }
+
+    .tip-box .tip-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .tip-box p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <img class="hero-img" src="%EC%B9%B4%EB%A0%88.jpg" alt="감자카레" />
+    <div class="hero-overlay"></div>
+    <div class="hero-badge-wrap">
+      <a class="back-link" href="index.html">← 레시피 목록</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="dish-tag">밥 · 카레 · 감자</div>
+    <h1>감자카레</h1>
+    <p class="dish-desc">감자를 듬뿍 넣어 든든한 집밥 카레.<br>푹 익은 감자가 카레 소스에 녹아들어 진하고 걸쭉한 맛이 난다.</p>
+
+    <div class="info-chips">
+      <div class="chip"><strong>2~3인분</strong></div>
+      <div class="chip"><strong>⏱</strong> 약 35분</div>
+      <div class="chip"><strong>난이도</strong> 쉬움</div>
+    </div>
+
+    <div class="section-title">INGREDIENTS · 재료</div>
+    <div class="ingredients">
+      <div class="ingredient-group">
+        <div class="ingredient-group-label">주재료</div>
+        <div class="ingredient-row"><span>감자</span><span class="ingredient-amount">3개 (큼직하게)</span></div>
+        <div class="ingredient-row"><span>양파</span><span class="ingredient-amount">1개</span></div>
+        <div class="ingredient-row"><span>당근</span><span class="ingredient-amount">½개</span></div>
+        <div class="ingredient-row"><span>돼지고기 (앞다리 or 불고기용)</span><span class="ingredient-amount">150g</span></div>
+      </div>
+      <div class="ingredient-group">
+        <div class="ingredient-group-label">카레 소스 · 기타</div>
+        <div class="ingredient-row"><span>카레 루</span><span class="ingredient-amount">4~5조각</span></div>
+        <div class="ingredient-row"><span>물</span><span class="ingredient-amount">600ml</span></div>
+        <div class="ingredient-row"><span>식용유</span><span class="ingredient-amount">1큰술</span></div>
+        <div class="ingredient-row"><span>밥</span><span class="ingredient-amount">2~3공기</span></div>
+      </div>
+    </div>
+
+    <div class="section-title">STEPS · 조리 방법</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          감자는 껍질을 벗기고 <em>한 입 크기</em>로 깍둑썰기. 양파는 굵게 채 썰고, 당근은 큼직하게 썬다.
+          <img class="step-img" src="%EA%B0%90%EC%9E%90%EC%A1%B0%EB%A6%AC%EA%B3%BC%EC%A0%95.jpg" alt="감자 조리 과정" />
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">팬에 식용유를 두르고 돼지고기를 <em>중강불</em>에서 겉면이 익을 때까지 볶는다.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">양파, 당근, 감자를 넣고 <em>2~3분</em> 더 볶아준다.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">물 600ml를 붓고 <em>뚜껑을 덮어 중불</em>에서 15~20분 끓인다. 감자가 젓가락으로 쑥 들어가면 완성.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-text">불을 끄고 카레 루를 넣어 <em>완전히 녹을 때까지</em> 저어준다.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-text">다시 <em>약불</em>로 켜고 2~3분 더 끓여 농도를 맞춘다. 밥 위에 듬뿍 올려 완성.</div>
+      </div>
+    </div>
+
+    <div class="section-title">TIP</div>
+    <div class="tip-box">
+      <div class="tip-title">맛있게 만드는 포인트</div>
+      <p>· 감자는 크게 썰어야 뭉개지지 않고 식감이 살아요.<br>
+         · 카레 루는 불 끄고 넣어야 눌어붙지 않아요.<br>
+         · 다음 날 먹으면 더 맛있습니다.</p>
+    </div>
+  </div>
+
+</body>
+</html>
