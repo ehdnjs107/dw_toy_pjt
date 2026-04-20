@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DW Upload</title>
+  <style>
+    :root {
+      --bg: #0a0f0d;
+      --surface: #111a14;
+      --border: rgba(82, 183, 136, 0.2);
+      --green: #52b788;
+      --gold: #c9a84c;
+      --text: #f0f4f0;
+      --muted: #7a9e87;
+      --danger: #e05555;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .screen {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    /* ── 공통 ── */
+    .badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.4);
+      padding: 0.2rem 0.8rem;
+      border-radius: 50px;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+
+    .sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .field { margin-bottom: 1.1rem; }
+
+    label {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+    }
+
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus { border-color: var(--green); }
+
+    .file-drop {
+      width: 100%;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 2rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+
+    .file-drop:hover, .file-drop.over {
+      border-color: var(--green);
+      background: rgba(82,183,136,0.05);
+    }
+
+    .file-drop input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .file-drop-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .file-drop-text { font-size: 0.8rem; color: var(--muted); }
+    .file-name { font-size: 0.82rem; color: var(--green); margin-top: 0.4rem; word-break: break-all; }
+
+    .btn {
+      width: 100%;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-primary { background: var(--green); color: #fff; margin-top: 0.5rem; }
+    .btn-primary:hover { background: #40a070; }
+    .btn-primary:disabled { background: #2a4a38; color: var(--muted); cursor: not-allowed; }
+
+    .msg {
+      margin-top: 1rem;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .msg.success { background: rgba(82,183,136,0.12); border: 1px solid rgba(82,183,136,0.3); color: var(--green); }
+    .msg.error   { background: rgba(224,85,85,0.1);   border: 1px solid rgba(224,85,85,0.3);   color: var(--danger); }
+    .msg.show    { display: block; }
+
+    /* 업로드 후 경로 표시 */
+    .result-path {
+      margin-top: 0.5rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      word-break: break-all;
+      background: rgba(0,0,0,0.3);
+      padding: 0.5rem 0.7rem;
+      border-radius: 6px;
+      font-family: monospace;
+      display: none;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 3px;
+      background: rgba(82,183,136,0.15);
+      border-radius: 2px;
+      margin-top: 0.8rem;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--green);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── 비밀번호 화면 ── -->
+<div class="screen" id="screenAuth">
+  <div class="badge">DW UPLOAD</div>
+  <h2>접근 인증</h2>
+  <p class="sub">비밀번호를 입력하세요.</p>
+  <div class="field">
+    <label>PASSWORD</label>
+    <input type="password" id="pwInput" placeholder="••••••••" />
+  </div>
+  <button class="btn btn-primary" onclick="checkPw()">확인</button>
+  <div class="msg error" id="authMsg">비밀번호가 틀렸습니다.</div>
+</div>
+
+<!-- ── 업로드 화면 ── -->
+<div class="screen" id="screenUpload" style="display:none">
+  <div class="badge">DW UPLOAD</div>
+  <h2>파일 업로드</h2>
+  <p class="sub">파일을 선택하고 저장할 이름을 지정하세요.<br>업로드 후 git pull 하면 PC 작업폴더에 반영됩니다.</p>
+
+  <div class="field">
+    <label>파일 선택</label>
+    <div class="file-drop" id="fileDrop">
+      <input type="file" id="fileInput" onchange="onFileChange()" />
+      <div class="file-drop-icon">📁</div>
+      <div class="file-drop-text">탭하여 파일 선택</div>
+      <div class="file-name" id="fileNameDisplay"></div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>저장 파일명 (확장자 포함)</label>
+    <input type="text" id="saveNameInput" placeholder="예: park_main.jpg" />
+  </div>
+
+  <button class="btn btn-primary" id="uploadBtn" onclick="uploadFile()" disabled>업로드</button>
+
+  <div class="progress-bar-wrap" id="progressWrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="msg" id="uploadMsg"></div>
+  <div class="result-path" id="resultPath"></div>
+</div>
+
+<script>
+  // ── 설정 ──────────────────────────────────────────
+  const CONFIG = {
+    p1:       'github_pat_11AW2D6PY0uhJ0CEtc3att_WuQO7OpM',
+    p2:       'SRGeh0Nz1PSG3mHDAsHfkj6SDCxeqbk3Z3EMAMH9BdJNhQh',
+    owner:    'ehdnjs107',
+    repo:     'dw_toy_pjt',
+    branch:   'main',
+    uploadDir: 'uploads',
+  };
+  // ──────────────────────────────────────────────────
+
+  let resolvedPat = null;
+
+  function checkPw() {
+    const val = document.getElementById('pwInput').value.trim();
+    if (val.length === 4) {
+      resolvedPat = CONFIG.p1 + val + CONFIG.p2;
+      document.getElementById('screenAuth').style.display = 'none';
+      document.getElementById('screenUpload').style.display = 'block';
+    } else {
+      const msg = document.getElementById('authMsg');
+      msg.classList.add('show');
+      setTimeout(() => msg.classList.remove('show'), 2000);
+    }
+  }
+
+  document.getElementById('pwInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPw();
+  });
+
+  let selectedFile = null;
+
+  function onFileChange() {
+    const input = document.getElementById('fileInput');
+    selectedFile = input.files[0];
+    if (!selectedFile) return;
+
+    document.getElementById('fileNameDisplay').textContent = selectedFile.name;
+
+    // 기본 저장명: 타임스탬프_원본파일명
+    const ts = getTimestamp();
+    const saveName = document.getElementById('saveNameInput');
+    if (!saveName.value) {
+      saveName.value = ts + '_' + selectedFile.name.replace(/\s+/g, '_');
+    }
+
+    document.getElementById('uploadBtn').disabled = false;
+  }
+
+  function getTimestamp() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    return `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+  }
+
+  async function uploadFile() {
+    if (!selectedFile) return;
+
+    const saveName = document.getElementById('saveNameInput').value.trim();
+    if (!saveName) { showMsg('파일명을 입력해주세요.', 'error'); return; }
+
+    const btn = document.getElementById('uploadBtn');
+    btn.disabled = true;
+    btn.textContent = '업로드 중...';
+
+    setProgress(true, 30);
+
+    try {
+      const base64 = await fileToBase64(selectedFile);
+      setProgress(true, 60);
+
+      const filePath = `${CONFIG.uploadDir}/${saveName}`;
+      const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${filePath}`;
+
+      const now = new Date().toISOString();
+      const body = {
+        message: `upload: ${saveName} [${now}]`,
+        content: base64,
+        branch: CONFIG.branch,
+      };
+
+      // 같은 이름 파일이 있으면 sha 필요
+      const existing = await fetch(url, {
+        headers: { 'Authorization': `token ${resolvedPat}` }
+      });
+      if (existing.ok) {
+        const data = await existing.json();
+        body.sha = data.sha;
+      }
+
+      setProgress(true, 85);
+
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${resolvedPat}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      setProgress(true, 100);
+
+      if (res.ok) {
+        showMsg(`✅ 업로드 완료\n파일명: ${saveName}\n시각: ${now.replace('T',' ').slice(0,19)} (UTC)`, 'success');
+        document.getElementById('resultPath').style.display = 'block';
+        document.getElementById('resultPath').textContent = `uploads/${saveName}`;
+        resetForm();
+      } else {
+        const err = await res.json();
+        showMsg('업로드 실패: ' + (err.message || res.status), 'error');
+      }
+    } catch (e) {
+      showMsg('오류: ' + e.message, 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = '업로드';
+    setProgress(false, 0);
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function showMsg(text, type) {
+    const el = document.getElementById('uploadMsg');
+    el.textContent = text;
+    el.className = `msg ${type} show`;
+  }
+
+  function setProgress(show, pct) {
+    const wrap = document.getElementById('progressWrap');
+    const bar  = document.getElementById('progressBar');
+    wrap.style.display = show ? 'block' : 'none';
+    bar.style.width = pct + '%';
+  }
+
+  function resetForm() {
+    selectedFile = null;
+    document.getElementById('fileInput').value = '';
+    document.getElementById('fileNameDisplay').textContent = '';
+    document.getElementById('saveNameInput').value = '';
+    document.getElementById('uploadBtn').disabled = true;
+  }
+
+  // 드래그앤드롭
+  const drop = document.getElementById('fileDrop');
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault();
+    drop.classList.remove('over');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      document.getElementById('fileInput').files = e.dataTransfer.files;
+      onFileChange();
+    }
+  });
+</script>
+
+</body>
+</html>
