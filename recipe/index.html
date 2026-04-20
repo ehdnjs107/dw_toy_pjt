@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DW 레시피</title>
+  <style>
+    :root {
+      --bg: #0f0d0a;
+      --surface: #1a1612;
+      --border: rgba(210, 160, 80, 0.15);
+      --gold: #d4a843;
+      --gold-light: #f0c060;
+      --text: #f5f0e8;
+      --muted: #9a8870;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 3.5rem 1.5rem 2rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+
+    .back-link:hover { color: var(--gold); }
+
+    .header-badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      border: 1px solid rgba(212, 168, 67, 0.4);
+      padding: 0.2rem 0.9rem;
+      border-radius: 50px;
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    header h1 span { color: var(--gold-light); }
+
+    header p {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    main { padding: 2rem 1.5rem 4rem; }
+
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .recipe-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .recipe-card {
+      display: block;
+      text-decoration: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .recipe-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-3px);
+    }
+
+    .recipe-card-thumb {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s;
+    }
+
+    .recipe-card:hover .recipe-card-thumb { transform: scale(1.05); }
+
+    .recipe-card-body { padding: 0.9rem; }
+
+    .recipe-card-tag {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+    }
+
+    .recipe-card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .recipe-card-desc {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="back-link" href="../">← 홈</a>
+    <div class="header-badge">DW RECIPE</div>
+    <h1>DW의 <span>레시피</span></h1>
+    <p>직접 먹어보고 만들어본 것들</p>
+  </header>
+
+  <main>
+    <div class="section-label">RECIPES</div>
+    <div class="recipe-grid">
+
+      <a class="recipe-card" href="omurice.html">
+        <img class="recipe-card-thumb"
+          src="../uploads/%EC%98%A4%EB%AF%80%EB%9D%BC%EC%9D%B4%EC%8A%A4.jpg"
+          alt="오므라이스" />
+        <div class="recipe-card-body">
+          <div class="recipe-card-tag">밥 · 계란</div>
+          <div class="recipe-card-title">오므라이스</div>
+          <div class="recipe-card-desc">부드러운 계란으로 감싼 케첩 볶음밥</div>
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+</body>
+</html>

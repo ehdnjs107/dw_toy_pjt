@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>오므라이스 레시피</title>
+  <style>
+    :root {
+      --bg: #0f0d0a;
+      --surface: #1a1612;
+      --surface2: #221e18;
+      --border: rgba(210, 160, 80, 0.15);
+      --gold: #d4a843;
+      --gold-light: #f0c060;
+      --text: #f5f0e8;
+      --muted: #9a8870;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── 히어로 ── */
+    .hero {
+      position: relative;
+      height: 55vw;
+      max-height: 340px;
+      overflow: hidden;
+    }
+
+    .hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 60%;
+      filter: brightness(0.7) saturate(1.1);
+      animation: zoomin 14s ease-out forwards;
+    }
+
+    @keyframes zoomin {
+      from { transform: scale(1.08); }
+      to   { transform: scale(1.0); }
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, var(--bg) 100%);
+    }
+
+    .hero-badge-wrap {
+      position: absolute;
+      top: 1.2rem;
+      left: 1.5rem;
+    }
+
+    .back-link {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+      padding: 0.3rem 0.9rem;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* ── 콘텐츠 ── */
+    .content {
+      padding: 0 1.5rem 4rem;
+      margin-top: -2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .dish-tag {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      border: 1px solid rgba(212,168,67,0.4);
+      padding: 0.2rem 0.7rem;
+      border-radius: 50px;
+      margin-bottom: 0.7rem;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+
+    .dish-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+
+    /* ── 정보 칩 ── */
+    .info-chips {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.2rem;
+    }
+
+    .chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .chip strong { color: var(--gold-light); margin-right: 0.3rem; }
+
+    /* ── 섹션 ── */
+    .section-title {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    /* ── 재료 ── */
+    .ingredients {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.4rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .ingredient-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .ingredient-group:last-child { margin-bottom: 0; }
+
+    .ingredient-group-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ingredient-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(210,160,80,0.06);
+      font-size: 0.85rem;
+    }
+
+    .ingredient-row:last-child { border-bottom: none; }
+
+    .ingredient-amount {
+      color: var(--muted);
+      font-size: 0.78rem;
+      flex-shrink: 0;
+    }
+
+    /* ── 조리 단계 ── */
+    .steps { margin-bottom: 2rem; }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.1rem;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      background: var(--gold);
+      color: #0f0d0a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .step-text {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: var(--text);
+      padding-top: 0.2rem;
+    }
+
+    .step-text em {
+      font-style: normal;
+      color: var(--gold-light);
+      font-weight: 600;
+    }
+
+    /* ── 팁 ── */
+    .tip-box {
+      background: rgba(212,168,67,0.07);
+      border: 1px solid rgba(212,168,67,0.25);
+      border-radius: 14px;
+      padding: 1.2rem 1.3rem;
+    }
+
+    .tip-box .tip-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .tip-box p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 히어로 -->
+  <div class="hero">
+    <img class="hero-img"
+      src="../uploads/%EC%98%A4%EB%AF%80%EB%9D%BC%EC%9D%B4%EC%8A%A4.jpg"
+      alt="오므라이스" />
+    <div class="hero-overlay"></div>
+    <div class="hero-badge-wrap">
+      <a class="back-link" href="index.html">← 레시피 목록</a>
+    </div>
+  </div>
+
+  <!-- 콘텐츠 -->
+  <div class="content">
+    <div class="dish-tag">밥 · 계란 · 일식</div>
+    <h1>오므라이스</h1>
+    <p class="dish-desc">부드럽고 얇은 달걀 옷으로 케첩 볶음밥을 감싼 일본식 가정 요리.<br>만들기 쉽고 맛도 좋아 자주 해먹게 되는 메뉴.</p>
+
+    <div class="info-chips">
+      <div class="chip"><strong>2인분</strong></div>
+      <div class="chip"><strong>⏱</strong> 약 20분</div>
+      <div class="chip"><strong>난이도</strong> 쉬움</div>
+    </div>
+
+    <!-- 재료 -->
+    <div class="section-title">INGREDIENTS · 재료</div>
+    <div class="ingredients">
+      <div class="ingredient-group">
+        <div class="ingredient-group-label">주재료</div>
+        <div class="ingredient-row"><span>찬밥</span><span class="ingredient-amount">2공기</span></div>
+        <div class="ingredient-row"><span>달걀</span><span class="ingredient-amount">4개</span></div>
+        <div class="ingredient-row"><span>닭가슴살 or 소시지</span><span class="ingredient-amount">100g</span></div>
+        <div class="ingredient-row"><span>양파</span><span class="ingredient-amount">½개</span></div>
+        <div class="ingredient-row"><span>당근</span><span class="ingredient-amount">¼개</span></div>
+        <div class="ingredient-row"><span>냉동 완두콩</span><span class="ingredient-amount">30g</span></div>
+      </div>
+      <div class="ingredient-group">
+        <div class="ingredient-group-label">양념 · 기타</div>
+        <div class="ingredient-row"><span>케첩</span><span class="ingredient-amount">4큰술</span></div>
+        <div class="ingredient-row"><span>버터</span><span class="ingredient-amount">1큰술</span></div>
+        <div class="ingredient-row"><span>우유</span><span class="ingredient-amount">1큰술 (달걀에)</span></div>
+        <div class="ingredient-row"><span>소금, 후추</span><span class="ingredient-amount">약간</span></div>
+      </div>
+    </div>
+
+    <!-- 조리 단계 -->
+    <div class="section-title">STEPS · 조리 방법</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">양파, 당근, 닭가슴살(or 소시지)을 <em>작게 깍둑썰기</em>한다.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">팬에 버터를 녹이고 채소와 고기를 <em>중불</em>에서 볶는다. 완두콩도 함께 넣어 볶기.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">찬밥을 넣고 <em>케첩 3큰술</em>을 넣어 고루 섞어가며 볶음밥을 만든다. 소금·후추로 간.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">달걀 2개에 우유 ½큰술, 소금 한 꼬집을 넣고 잘 풀어준다. 팬에 기름을 두르고 <em>약불</em>에서 얇게 부친다.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-text">달걀이 <em>반쯤 굳었을 때</em> 볶음밥을 한쪽에 올리고 달걀로 감싸듯 모양을 잡아준다.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-text">접시에 담고 <em>케첩을 취향껏</em> 뿌려 완성.</div>
+      </div>
+    </div>
+
+    <!-- 팁 -->
+    <div class="section-title">TIP</div>
+    <div class="tip-box">
+      <div class="tip-title">맛있게 만드는 포인트</div>
+      <p>· 달걀은 약불에서 천천히 익혀야 찢어지지 않아요.<br>
+         · 볶음밥은 찬밥을 써야 덜 뭉쳐져요.<br>
+         · 케첩 대신 토마토소스를 쓰면 더 깊은 맛이 납니다.</p>
+    </div>
+  </div>
+
+</body>
+</html>
