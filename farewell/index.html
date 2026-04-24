@@ -513,8 +513,8 @@
     <section class="header">
         <div class="stars-bg" id="stars-bg"></div>
         <div class="main-name">이수정</div>
-        <div class="congrats-msg">경 축 퇴 사</div>
-        <p class="sub-msg">혼자만 도망치다니 세상이 아주 맑고 이쁘시겠다</p>
+        <div class="congrats-msg">🎉경 🎉 퇴  사 🎉축 🎉</div>
+        <p class="sub-msg">혼자만 도망치다시 세상이 아주 아름답지?</p>
         <span class="emoji-row">🎊 🥳 🎈 🎆 🎁</span>
     </section>
 
@@ -599,15 +599,13 @@
             </div>
             <div class="form-group">
                 <label>메시지</label>
-                <textarea id="gb-msg" placeholder="이수정에게 전하고 싶은 말을 남겨주세요 💛"></textarea>
+                <textarea id="gb-msg" placeholder="전하고 싶은 말"></textarea>
             </div>
             <button class="submit-btn" onclick="submitGB()">방명록 남기기 ✉️</button>
         </div>
         <div class="gb-entries" id="gb-entries"></div>
     </section>
 
-    <!-- VISITOR -->
-    <div class="visitor" id="visitor"></div>
 
 </div><!-- /main -->
 
@@ -896,12 +894,6 @@ function spawnBubble(entry) {
     setTimeout(() => el.remove(), dur * 1000);
 }
 
-/* =========== VISITOR COUNTER =========== */
-(function() {
-    const n = parseInt(localStorage.getItem('sj_visitors') || '0') + 1;
-    localStorage.setItem('sj_visitors', n);
-    document.getElementById('visitor').textContent = `👣 ${n}번째 방문자`;
-})();
 
 /* =========== INIT =========== */
 renderGB();
