@@ -360,6 +360,34 @@
             font-weight: 900;
         }
 
+        .todo-text { flex: 1; }
+
+        .todo-del {
+            flex-shrink: 0;
+            background: rgba(255,80,80,0.12);
+            border: 1px solid rgba(255,80,80,0.25);
+            border-radius: 8px;
+            color: #ff6060;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .todo-del:hover {
+            background: rgba(255,80,80,0.25);
+            border-color: rgba(255,80,80,0.5);
+        }
+
+        .todo-del.nope {
+            background: rgba(255,215,0,0.15);
+            border-color: #ffd700;
+            color: #ffd700;
+            font-weight: 700;
+        }
+
         /* ── GUESTBOOK ── */
         .guestbook-section {
             max-width: 620px;
@@ -718,13 +746,8 @@ const TODOS = [
     '개백수 일상 공유 📸',
     '전 회사 앞에서 낮술하기 🥂',
     '머리 3일 안감기 🙅',
-    '회사 단톡방 전부 나가기 💨',
-    '월요일 아침에 이불 속에서 직장인 출근 뉴스 보기 📺',
-    '알람 싹 다 삭제하기 🗑️',
-    '평일 대낮에 영화관 1열 점령하기 🎬',
-    '퇴직금으로 지르고 싶은 거 지르기 💸',
-    '한강 평일 돗자리 원정 🌸',
-    '전 직장 상사 욕 실컷 하기 🤬',
+    '퇴직금으로 소고기 사기 🥩',
+    '국토대장정 🥾',
 ];
 
 (function initTodo() {
@@ -735,7 +758,8 @@ const TODOS = [
         li.className = 'todo-item' + (saved[i] ? ' done' : '');
         li.innerHTML = `
             <div class="todo-check">${saved[i] ? '✓' : ''}</div>
-            <span>${text}</span>
+            <span class="todo-text">${text}</span>
+            <button class="todo-del">삭제</button>
         `;
         li.onclick = () => {
             const isDone = li.classList.toggle('done');
@@ -743,6 +767,17 @@ const TODOS = [
             li.querySelector('.todo-check').textContent = isDone ? '✓' : '';
             localStorage.setItem('sj_todos', JSON.stringify(saved));
         };
+        li.querySelector('.todo-del').addEventListener('click', e => {
+            e.stopPropagation();
+            const btn = e.currentTarget;
+            if (btn.classList.contains('nope')) return;
+            btn.textContent = '되겠냐?';
+            btn.classList.add('nope');
+            setTimeout(() => {
+                btn.textContent = '삭제';
+                btn.classList.remove('nope');
+            }, 1500);
+        });
         ul.appendChild(li);
     });
 })();
