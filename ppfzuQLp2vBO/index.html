@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DW Pages</title>
+  <style>
+    :root {
+      --bg: #0a0f0d;
+      --surface: #111a14;
+      --border: rgba(82, 183, 136, 0.15);
+      --green: #52b788;
+      --gold: #c9a84c;
+      --text: #f0f4f0;
+      --text-muted: #7a9e87;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 3.5rem 1.5rem 2rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      padding: 0.25rem 0.9rem;
+      border-radius: 50px;
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    header h1 span { color: var(--green); }
+
+    header p {
+      margin-top: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    main {
+      flex: 1;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card {
+      display: block;
+      text-decoration: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--green);
+      transform: translateY(-3px);
+    }
+
+    .card-thumb {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.75) saturate(1.1);
+      transition: filter 0.3s;
+    }
+
+    .card:hover .card-thumb { filter: brightness(0.9) saturate(1.2); }
+
+    .card-body { padding: 1.2rem 1.3rem; }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      color: var(--green);
+      border: 1px solid rgba(82, 183, 136, 0.35);
+      padding: 0.15rem 0.55rem;
+      border-radius: 50px;
+      margin-bottom: 0.6rem;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .card-footer {
+      margin-top: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-date { font-size: 0.68rem; color: rgba(122, 158, 135, 0.6); }
+
+    .card-arrow {
+      font-size: 0.75rem;
+      color: var(--green);
+      letter-spacing: 0.05em;
+    }
+
+    /* 계산기 카드 썸네일 */
+    .card-thumb-calc {
+      width: 100%;
+      height: 160px;
+      background: #1a1a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: filter 0.3s;
+    }
+
+    .card:hover .card-thumb-calc { filter: brightness(1.15); }
+
+    .calc-preview {
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .calc-screen {
+      font-size: 0.7rem;
+      color: #a0a8c0;
+      margin-bottom: 2px;
+    }
+
+    .calc-result {
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .calc-keys {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      width: 140px;
+    }
+
+    .calc-keys span {
+      background: #16213e;
+      color: #fff;
+      border-radius: 6px;
+      padding: 4px 0;
+      font-size: 0.6rem;
+      text-align: center;
+    }
+
+    .calc-keys span.op { background: #e94560; }
+    .calc-keys span.eq { background: #533483; }
+    .calc-keys span.zero { grid-column: span 2; }
+
+    /* 퇴사 축하 카드 썸네일 */
+    .card-thumb-farewell {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, #1a0a2e, #0a1a2e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: filter 0.3s;
+    }
+
+    .card:hover .card-thumb-farewell { filter: brightness(1.2); }
+
+    .farewell-preview {
+      text-align: center;
+    }
+
+    .farewell-preview .fw-name {
+      font-size: 1.6rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffd700, #ff8c00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    .farewell-preview .fw-emoji {
+      font-size: 1.4rem;
+    }
+
+    /* 오목 플로팅 버튼 */
+    .minigame-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #1a1612;
+      border: 1px solid rgba(210, 160, 80, 0.4);
+      border-radius: 50px;
+      padding: 0.55rem 1.1rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      color: #d4a843;
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      transition: border-color 0.2s, transform 0.2s;
+      z-index: 100;
+    }
+
+    .minigame-btn:hover {
+      border-color: #d4a843;
+      transform: translateY(-2px);
+    }
+
+    .minigame-btn .stone {
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle at 35% 35%, #555, #111);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    footer {
+      padding: 1.8rem 1.5rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p {
+      font-size: 0.68rem;
+      color: rgba(122, 158, 135, 0.4);
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-badge">DW PAGES</div>
+    <h1>DW의 <span>웹 프로젝트</span></h1>
+    <p>클로드와 함께 만드는 정보성 페이지 모음</p>
+  </header>
+
+  <main>
+    <div class="section-label">Projects</div>
+    <div class="cards">
+
+      <!-- 가상공중정원 -->
+      <a class="card" href="../skygarden/">
+        <img class="card-thumb"
+          src="https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=800&q=80&fit=crop"
+          alt="가상공중정원" />
+        <div class="card-body">
+          <div class="card-tag">공원 안내</div>
+          <div class="card-title">가상공중정원</div>
+          <div class="card-desc">서울 하늘구에 위치한 공중 생태공원 공식 안내 페이지. 공원 역사, 이용 안내, 약도, 오시는 길 수록.</div>
+          <div class="card-footer">
+            <span class="card-date">2026.04.20</span>
+            <span class="card-arrow">바로가기 →</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 레시피 -->
+      <a class="card" href="../recipe/">
+        <img class="card-thumb"
+          src="../recipe/%EC%98%A4%EB%AF%80%EB%9D%BC%EC%9D%B4%EC%8A%A4.jpg"
+          alt="레시피" />
+        <div class="card-body">
+          <div class="card-tag">요리 레시피</div>
+          <div class="card-title">DW 레시피</div>
+          <div class="card-desc">직접 먹어보고 만든 레시피 모음. 오므라이스 외 계속 추가 예정.</div>
+          <div class="card-footer">
+            <span class="card-date">2026.04.20</span>
+            <span class="card-arrow">바로가기 →</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 계산기 -->
+      <a class="card" href="../calculator/">
+        <div class="card-thumb card-thumb-calc">
+          <div class="calc-preview">
+            <div class="calc-screen">123 + 456</div>
+            <div class="calc-result">579</div>
+            <div class="calc-keys">
+              <span>AC</span><span>+/-</span><span>%</span><span class="op">÷</span>
+              <span>7</span><span>8</span><span>9</span><span class="op">×</span>
+              <span>4</span><span>5</span><span>6</span><span class="op">−</span>
+              <span>1</span><span>2</span><span>3</span><span class="op">+</span>
+              <span class="zero">0</span><span>.</span><span class="eq">=</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-tag">계산기</div>
+          <div class="card-title">Calculator</div>
+          <div class="card-desc">사칙연산 지원 계산기. 수식 미리보기 포함.</div>
+          <div class="card-footer">
+            <span class="card-date">2026.04.20</span>
+            <span class="card-arrow">바로가기 →</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 이수정 퇴사 축하 -->
+      <a class="card" href="../farewell/">
+        <div class="card-thumb card-thumb-farewell">
+          <div class="farewell-preview">
+            <div class="fw-name">이수정</div>
+            <div class="fw-emoji">🎉 퇴사 축하 🎊</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-tag">퇴사 축하</div>
+          <div class="card-title">이수정 퇴사 축하 페이지</div>
+          <div class="card-desc">D-day 카운트다운, 퇴사 시계, 방명록, 짤 슬라이드쇼 포함. 4월 30일 퇴사 기념.</div>
+          <div class="card-footer">
+            <span class="card-date">2026.04.24</span>
+            <span class="card-arrow">바로가기 →</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 DW Pages — Made with Claude</p>
+  </footer>
+
+  <a class="minigame-btn" href="../omok/">
+    <span class="stone"></span>
+    미니게임 · 오목
+  </a>
+
+</body>
+</html>
