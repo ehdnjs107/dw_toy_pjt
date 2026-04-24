@@ -760,7 +760,7 @@ function renderGB() {
         const div = document.createElement('div');
         div.className = 'gb-entry';
         div.innerHTML = `
-            <div class="entry-name">💛 ${escHtml(e.name)}</div>
+            <div class="entry-name">${escHtml(e.name)}</div>
             <div class="entry-msg">${escHtml(e.msg)}</div>
             <div class="entry-date">${e.date}</div>
         `;
@@ -799,7 +799,7 @@ function startBubbles(entries) {
     bubbleZone.innerHTML = '';
     if (!entries.length) return;
 
-    const interval = Math.max(3000, entries.length * 3500);
+    const interval = Math.max(12000, entries.length * 14000);
 
     entries.forEach((e, i) => {
         function spawnLoop() {
@@ -807,7 +807,7 @@ function startBubbles(entries) {
             const t = setTimeout(spawnLoop, interval);
             bubbleTimers.push(t);
         }
-        const t = setTimeout(spawnLoop, i * 3500);
+        const t = setTimeout(spawnLoop, i * 14000);
         bubbleTimers.push(t);
     });
 }
