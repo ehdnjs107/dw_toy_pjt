@@ -201,39 +201,39 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            gap: 8px;
+            flex-wrap: nowrap;
         }
 
         .clock-unit { text-align: center; }
 
         .clock-value {
             display: block;
-            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-size: clamp(1.8rem, 5vw, 3.2rem);
             font-weight: 900;
             color: #ffd700;
             font-variant-numeric: tabular-nums;
             background: rgba(255,215,0,0.08);
             border: 1px solid rgba(255,215,0,0.2);
             border-radius: 12px;
-            padding: 10px 18px;
-            min-width: 90px;
+            padding: 8px 12px;
+            min-width: 70px;
         }
 
         .clock-label {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: #888;
             margin-top: 6px;
         }
 
         .clock-sep {
-            font-size: 3rem;
+            font-size: 2.2rem;
             font-weight: 900;
             color: #ffd700;
             opacity: 0.6;
             animation: blink 1s step-end infinite;
             align-self: center;
-            padding-bottom: 20px;
+            padding-bottom: 18px;
         }
 
         @keyframes blink { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.1; } }
@@ -497,8 +497,15 @@
         .pad { padding: 0 20px; }
 
         @media (max-width: 500px) {
-            .clock-value { min-width: 68px; padding: 8px 10px; }
-            .clock-sep   { font-size: 2rem; }
+            .clock-display { gap: 4px; }
+            .clock-value   { min-width: 52px; padding: 6px 6px; font-size: 1.5rem; }
+            .clock-sep     { font-size: 1.3rem; padding-bottom: 14px; }
+            .clock-label   { font-size: 0.68rem; }
+        }
+
+        @media (max-width: 360px) {
+            .clock-value   { min-width: 44px; padding: 5px 4px; font-size: 1.25rem; }
+            .clock-sep     { font-size: 1.1rem; padding-bottom: 12px; }
         }
     </style>
 </head>
