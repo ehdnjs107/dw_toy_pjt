@@ -615,32 +615,29 @@
     window.addEventListener('resize', resize);
 
     const COLORS = ['#ffd700','#ff6b6b','#4fc3f7','#81c784','#ce93d8','#ff8a65','#ffffff','#ff4d6d','#00e5ff'];
-    const pieces = Array.from({length: 150}, () => makePiece(true));
 
-    function makePiece(random) {
-        return {
-            x: Math.random() * innerWidth,
-            y: random ? Math.random() * innerHeight : -20,
-            w: 6 + Math.random() * 10,
-            h: 3 + Math.random() * 6,
-            color: COLORS[Math.floor(Math.random() * COLORS.length)],
-            vy: 1.5 + Math.random() * 3,
-            vx: (Math.random() - 0.5) * 2.5,
-            rot: Math.random() * 360,
-            rs: (Math.random() - 0.5) * 7,
-        };
-    }
-
-    let active = true;
-    setTimeout(() => active = false, 8000);
+    // 모든 조각이 화면 위에서 한꺼번에 쏟아지도록 시작 y를 음수로 설정
+    const pieces = Array.from({length: 200}, () => ({
+        x:     Math.random() * innerWidth,
+        y:     -20 - Math.random() * 300,   // 화면 위 0~300px 사이에서 시작 (즉시 쏟아지는 효과)
+        w:     6 + Math.random() * 10,
+        h:     3 + Math.random() * 6,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        vy:    5 + Math.random() * 5,        // 빠르게 (5~10px/frame → 약 2~3초에 화면 통과)
+        vx:    (Math.random() - 0.5) * 4,
+        rot:   Math.random() * 360,
+        rs:    (Math.random() - 0.5) * 8,
+        alive: true,
+    }));
 
     function loop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        pieces.forEach((p, i) => {
+        let anyAlive = false;
+        pieces.forEach(p => {
+            if (!p.alive) return;
             p.y += p.vy; p.x += p.vx; p.rot += p.rs;
-            if (p.y > canvas.height + 20) {
-                pieces[i] = makePiece(false);
-            }
+            if (p.y > canvas.height + 20) { p.alive = false; return; }
+            anyAlive = true;
             ctx.save();
             ctx.translate(p.x, p.y);
             ctx.rotate(p.rot * Math.PI / 180);
@@ -649,7 +646,8 @@
             ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
             ctx.restore();
         });
-        requestAnimationFrame(loop);
+        if (anyAlive) requestAnimationFrame(loop);
+        else canvas.style.display = 'none';
     }
     loop();
 })();
