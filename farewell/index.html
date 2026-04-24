@@ -783,48 +783,84 @@ const TODOS = [
 })();
 
 /* =========== GUESTBOOK =========== */
-const GB_KEY = 'sj_farewell_gb_v1';
+const JB = {
+    id:  '69eb1638856a68218968ffbc',
+    key: '$2a$10$rzik04bmILmxmtcA59LAK.EZDc3bPigikzqrzNFz4fli1v/WhwMAe',
+    url() { return `https://api.jsonbin.io/v3/b/${this.id}`; }
+};
 
-function loadGB() { return JSON.parse(localStorage.getItem(GB_KEY) || '[]'); }
-function saveGB(entries) { localStorage.setItem(GB_KEY, JSON.stringify(entries)); }
-
-function renderGB() {
-    const entries = loadGB();
-    const container = document.getElementById('gb-entries');
-    container.innerHTML = entries.length === 0
-        ? '<p style="color:#555;text-align:center;padding:20px;">아직 방명록이 없어요. 첫 번째로 남겨보세요! 💛</p>'
-        : '';
-    [...entries].reverse().forEach(e => {
-        const div = document.createElement('div');
-        div.className = 'gb-entry';
-        div.innerHTML = `
-            <div class="entry-name">${escHtml(e.name)}</div>
-            <div class="entry-msg">${escHtml(e.msg)}</div>
-            <div class="entry-date">${e.date}</div>
-        `;
-        container.appendChild(div);
+async function loadGB() {
+    const res = await fetch(JB.url() + '/latest', {
+        headers: { 'X-Master-Key': JB.key }
     });
-    startBubbles(entries);
+    if (!res.ok) throw new Error('load failed');
+    const data = await res.json();
+    return data.record.entries || [];
+}
+
+async function saveGB(entries) {
+    const res = await fetch(JB.url(), {
+        method: 'PUT',
+        headers: { 'X-Master-Key': JB.key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entries })
+    });
+    if (!res.ok) throw new Error('save failed');
 }
 
 function escHtml(s) {
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function submitGB() {
+async function renderGB() {
+    const container = document.getElementById('gb-entries');
+    container.innerHTML = '<p style="color:#555;text-align:center;padding:20px;">불러오는 중...</p>';
+    try {
+        const entries = await loadGB();
+        container.innerHTML = entries.length === 0
+            ? '<p style="color:#555;text-align:center;padding:20px;">아직 방명록이 없어요. 첫 번째로 남겨보세요! 💛</p>'
+            : '';
+        [...entries].reverse().forEach(e => {
+            const div = document.createElement('div');
+            div.className = 'gb-entry';
+            div.innerHTML = `
+                <div class="entry-name">${escHtml(e.name)}</div>
+                <div class="entry-msg">${escHtml(e.msg)}</div>
+                <div class="entry-date">${e.date}</div>
+            `;
+            container.appendChild(div);
+        });
+        startBubbles(entries);
+    } catch {
+        container.innerHTML = '<p style="color:#555;text-align:center;padding:20px;">방명록을 불러오지 못했어요 😢</p>';
+    }
+}
+
+async function submitGB() {
     const name = document.getElementById('gb-name').value.trim();
     const msg  = document.getElementById('gb-msg').value.trim();
     if (!name || !msg) { alert('이름과 메시지를 모두 입력해주세요!'); return; }
-    const entries = loadGB();
-    const now = new Date();
-    entries.push({
-        name, msg,
-        date: now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'})
-    });
-    saveGB(entries);
-    document.getElementById('gb-name').value = '';
-    document.getElementById('gb-msg').value = '';
-    renderGB();
+
+    const btn = document.querySelector('.submit-btn');
+    btn.disabled = true;
+    btn.textContent = '저장 중...';
+
+    try {
+        const entries = await loadGB();
+        const now = new Date();
+        entries.push({
+            name, msg,
+            date: now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'})
+        });
+        await saveGB(entries);
+        document.getElementById('gb-name').value = '';
+        document.getElementById('gb-msg').value = '';
+        await renderGB();
+    } catch {
+        alert('저장에 실패했어요. 잠시 후 다시 시도해주세요.');
+    }
+
+    btn.disabled = false;
+    btn.textContent = '방명록 남기기 ✉️';
 }
 
 /* =========== FLOATING BUBBLES =========== */
