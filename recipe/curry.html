@@ -137,29 +137,17 @@
       margin-bottom: 0.75rem;
     }
 
-    .serving-buttons {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.55rem;
-    }
-
-    .serving-button {
-      min-height: 42px;
+    .serving-select {
+      width: 100%;
+      min-height: 44px;
       border: 1px solid rgba(212,168,67,0.28);
-      border-radius: 999px;
+      border-radius: 10px;
       background: var(--surface2);
-      color: var(--muted);
+      color: var(--text);
       font: inherit;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       font-weight: 700;
-      cursor: pointer;
-      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-    }
-
-    .serving-button[aria-pressed="true"] {
-      background: var(--gold);
-      border-color: var(--gold);
-      color: #0f0d0a;
+      padding: 0 0.85rem;
     }
 
     .section-title {
@@ -279,7 +267,7 @@
     }
   </style>
 </head>
-<body>
+<body data-base-serving="4">
 
   <div class="hero">
     <img class="hero-img" src="%EC%B9%B4%EB%A0%88.jpg" alt="감자카레" />
@@ -302,28 +290,35 @@
 
     <div class="serving-control" aria-label="인분 선택">
       <div class="serving-label">SERVINGS · 인분 설정</div>
-      <div class="serving-buttons">
-        <button class="serving-button" type="button" data-serving="2" aria-pressed="false">2인분</button>
-        <button class="serving-button" type="button" data-serving="3" aria-pressed="false">3인분</button>
-        <button class="serving-button" type="button" data-serving="4" aria-pressed="true">4인분</button>
-      </div>
+      <select id="serving-select" class="serving-select">
+        <option value="1">1인분</option>
+        <option value="2">2인분</option>
+        <option value="3">3인분</option>
+        <option value="4" selected>4인분</option>
+        <option value="5">5인분</option>
+        <option value="6">6인분</option>
+        <option value="7">7인분</option>
+        <option value="8">8인분</option>
+        <option value="9">9인분</option>
+        <option value="10">10인분</option>
+      </select>
     </div>
 
     <div class="section-title">INGREDIENTS · 재료</div>
     <div class="ingredients">
       <div class="ingredient-group">
         <div class="ingredient-group-label">주재료</div>
-        <div class="ingredient-row"><span>감자</span><span class="ingredient-amount" data-amount='{"2":"2개 (큼직하게)","3":"3개 (큼직하게)","4":"4개 (큼직하게)"}'>4개 (큼직하게)</span></div>
-        <div class="ingredient-row"><span>양파</span><span class="ingredient-amount" data-amount='{"2":"1/2개","3":"1개","4":"1개"}'>1개</span></div>
-        <div class="ingredient-row"><span>당근</span><span class="ingredient-amount" data-amount='{"2":"1/2개","3":"1/2개","4":"1개"}'>1개</span></div>
-        <div class="ingredient-row"><span>돼지고기 (앞다리 or 불고기용)</span><span class="ingredient-amount" data-amount='{"2":"150g","3":"200g","4":"250g"}'>250g</span></div>
+        <div class="ingredient-row"><span>감자</span><span class="ingredient-amount" data-base="4" data-unit="개" data-suffix=" (큼직하게)" data-step="0.25"></span></div>
+        <div class="ingredient-row"><span>양파</span><span class="ingredient-amount" data-base="1" data-unit="개" data-step="0.25"></span></div>
+        <div class="ingredient-row"><span>당근</span><span class="ingredient-amount" data-base="1" data-unit="개" data-step="0.25"></span></div>
+        <div class="ingredient-row"><span>돼지고기 (앞다리 or 불고기용)</span><span class="ingredient-amount" data-base="250" data-unit="g" data-step="5"></span></div>
       </div>
       <div class="ingredient-group">
         <div class="ingredient-group-label">카레 소스 · 기타</div>
-        <div class="ingredient-row"><span>카레 루</span><span class="ingredient-amount" data-amount='{"2":"4~5조각","3":"5~6조각","4":"6~7조각"}'>6~7조각</span></div>
-        <div class="ingredient-row"><span>물</span><span class="ingredient-amount" data-amount='{"2":"600ml","3":"700ml","4":"800ml"}'>800ml</span></div>
-        <div class="ingredient-row"><span>식용유</span><span class="ingredient-amount" data-amount='{"2":"1큰술","3":"1큰술","4":"1큰술"}'>1큰술</span></div>
-        <div class="ingredient-row"><span>밥</span><span class="ingredient-amount" data-amount='{"2":"2공기","3":"3공기","4":"4공기"}'>4공기</span></div>
+        <div class="ingredient-row"><span>카레 루</span><span class="ingredient-amount" data-min-base="6" data-max-base="7" data-unit="조각" data-step="0.5"></span></div>
+        <div class="ingredient-row"><span>물</span><span class="ingredient-amount" data-base="800" data-unit="ml" data-step="50"></span></div>
+        <div class="ingredient-row"><span>식용유</span><span class="ingredient-amount" data-base="1" data-unit="큰술" data-step="0.25"></span></div>
+        <div class="ingredient-row"><span>밥</span><span class="ingredient-amount" data-base="4" data-unit="공기" data-step="0.5"></span></div>
       </div>
     </div>
 
@@ -346,7 +341,7 @@
       </div>
       <div class="step">
         <div class="step-num">4</div>
-        <div class="step-text">물 <span id="step-water">800ml</span>를 붓고 <em>뚜껑을 덮어 중불</em>에서 15~20분 끓인다. 감자가 젓가락으로 쑥 들어가면 완성.</div>
+        <div class="step-text">물 <span data-base="800" data-unit="ml" data-step="50"></span>를 붓고 <em>뚜껑을 덮어 중불</em>에서 15~20분 끓인다. 감자가 젓가락으로 쑥 들어가면 완성.</div>
       </div>
       <div class="step">
         <div class="step-num">5</div>
@@ -368,30 +363,45 @@
   </div>
 
   <script>
-    const servingButtons = document.querySelectorAll('.serving-button');
-    const amountNodes = document.querySelectorAll('[data-amount]');
+    const baseServing = Number(document.body.dataset.baseServing);
+    const servingSelect = document.getElementById('serving-select');
     const servingText = document.getElementById('serving-text');
-    const stepWater = document.getElementById('step-water');
+    const amountNodes = document.querySelectorAll('[data-base], [data-min-base]');
 
-    function updateServing(serving) {
+    function roundTo(value, step) {
+      return Math.round(value / step) * step;
+    }
+
+    function cleanNumber(value) {
+      const rounded = Math.round(value * 100) / 100;
+      return String(rounded).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+    }
+
+    function formatAmount(node, serving) {
+      const unit = node.dataset.unit || '';
+      const suffix = node.dataset.suffix || '';
+      const step = Number(node.dataset.step || 0.25);
+
+      if (node.dataset.minBase) {
+        const min = roundTo(Number(node.dataset.minBase) * serving / baseServing, step);
+        const max = roundTo(Number(node.dataset.maxBase) * serving / baseServing, step);
+        return `${cleanNumber(min)}~${cleanNumber(max)}${unit}${suffix}`;
+      }
+
+      const value = roundTo(Number(node.dataset.base) * serving / baseServing, step);
+      return `${cleanNumber(value)}${unit}${suffix}`;
+    }
+
+    function updateServing() {
+      const serving = Number(servingSelect.value);
       servingText.textContent = `${serving}인분`;
-
       amountNodes.forEach((node) => {
-        const amounts = JSON.parse(node.dataset.amount);
-        node.textContent = amounts[serving];
-      });
-
-      const waterAmount = document.querySelector('.ingredient-row span[data-amount*="ml"]').textContent;
-      stepWater.textContent = waterAmount;
-
-      servingButtons.forEach((button) => {
-        button.setAttribute('aria-pressed', String(button.dataset.serving === serving));
+        node.textContent = formatAmount(node, serving);
       });
     }
 
-    servingButtons.forEach((button) => {
-      button.addEventListener('click', () => updateServing(button.dataset.serving));
-    });
+    servingSelect.addEventListener('change', updateServing);
+    updateServing();
   </script>
 </body>
 </html>
