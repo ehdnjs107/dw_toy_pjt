@@ -107,7 +107,7 @@
       display: flex;
       gap: 0.6rem;
       flex-wrap: wrap;
-      margin-bottom: 2.2rem;
+      margin-bottom: 1rem;
     }
 
     .chip {
@@ -120,6 +120,47 @@
     }
 
     .chip strong { color: var(--gold-light); margin-right: 0.3rem; }
+
+    .serving-control {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 2.2rem;
+    }
+
+    .serving-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.12em;
+      margin-bottom: 0.75rem;
+    }
+
+    .serving-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.55rem;
+    }
+
+    .serving-button {
+      min-height: 42px;
+      border: 1px solid rgba(212,168,67,0.28);
+      border-radius: 999px;
+      background: var(--surface2);
+      color: var(--muted);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+
+    .serving-button[aria-pressed="true"] {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #0f0d0a;
+    }
 
     .section-title {
       font-size: 0.65rem;
@@ -153,6 +194,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 1rem;
       padding: 0.45rem 0;
       border-bottom: 1px solid rgba(210,160,80,0.06);
       font-size: 0.85rem;
@@ -164,6 +206,7 @@
       color: var(--muted);
       font-size: 0.78rem;
       flex-shrink: 0;
+      text-align: right;
     }
 
     .steps { margin-bottom: 2rem; }
@@ -252,26 +295,35 @@
     <p class="dish-desc">감자를 듬뿍 넣어 든든한 집밥 카레.<br>푹 익은 감자가 카레 소스에 녹아들어 진하고 걸쭉한 맛이 난다.</p>
 
     <div class="info-chips">
-      <div class="chip"><strong>3~4인분</strong></div>
+      <div class="chip"><strong id="serving-text">4인분</strong> 기준</div>
       <div class="chip"><strong>⏱</strong> 약 35분</div>
       <div class="chip"><strong>난이도</strong> 쉬움</div>
+    </div>
+
+    <div class="serving-control" aria-label="인분 선택">
+      <div class="serving-label">SERVINGS · 인분 설정</div>
+      <div class="serving-buttons">
+        <button class="serving-button" type="button" data-serving="2" aria-pressed="false">2인분</button>
+        <button class="serving-button" type="button" data-serving="3" aria-pressed="false">3인분</button>
+        <button class="serving-button" type="button" data-serving="4" aria-pressed="true">4인분</button>
+      </div>
     </div>
 
     <div class="section-title">INGREDIENTS · 재료</div>
     <div class="ingredients">
       <div class="ingredient-group">
         <div class="ingredient-group-label">주재료</div>
-        <div class="ingredient-row"><span>감자</span><span class="ingredient-amount">4개 (큼직하게)</span></div>
-        <div class="ingredient-row"><span>양파</span><span class="ingredient-amount">1개</span></div>
-        <div class="ingredient-row"><span>당근</span><span class="ingredient-amount">1개</span></div>
-        <div class="ingredient-row"><span>돼지고기 (앞다리 or 불고기용)</span><span class="ingredient-amount">250g</span></div>
+        <div class="ingredient-row"><span>감자</span><span class="ingredient-amount" data-amount='{"2":"2개 (큼직하게)","3":"3개 (큼직하게)","4":"4개 (큼직하게)"}'>4개 (큼직하게)</span></div>
+        <div class="ingredient-row"><span>양파</span><span class="ingredient-amount" data-amount='{"2":"1/2개","3":"1개","4":"1개"}'>1개</span></div>
+        <div class="ingredient-row"><span>당근</span><span class="ingredient-amount" data-amount='{"2":"1/2개","3":"1/2개","4":"1개"}'>1개</span></div>
+        <div class="ingredient-row"><span>돼지고기 (앞다리 or 불고기용)</span><span class="ingredient-amount" data-amount='{"2":"150g","3":"200g","4":"250g"}'>250g</span></div>
       </div>
       <div class="ingredient-group">
         <div class="ingredient-group-label">카레 소스 · 기타</div>
-        <div class="ingredient-row"><span>카레 루</span><span class="ingredient-amount">6~7조각</span></div>
-        <div class="ingredient-row"><span>물</span><span class="ingredient-amount">800ml</span></div>
-        <div class="ingredient-row"><span>식용유</span><span class="ingredient-amount">1큰술</span></div>
-        <div class="ingredient-row"><span>밥</span><span class="ingredient-amount">3~4공기</span></div>
+        <div class="ingredient-row"><span>카레 루</span><span class="ingredient-amount" data-amount='{"2":"4~5조각","3":"5~6조각","4":"6~7조각"}'>6~7조각</span></div>
+        <div class="ingredient-row"><span>물</span><span class="ingredient-amount" data-amount='{"2":"600ml","3":"700ml","4":"800ml"}'>800ml</span></div>
+        <div class="ingredient-row"><span>식용유</span><span class="ingredient-amount" data-amount='{"2":"1큰술","3":"1큰술","4":"1큰술"}'>1큰술</span></div>
+        <div class="ingredient-row"><span>밥</span><span class="ingredient-amount" data-amount='{"2":"2공기","3":"3공기","4":"4공기"}'>4공기</span></div>
       </div>
     </div>
 
@@ -294,7 +346,7 @@
       </div>
       <div class="step">
         <div class="step-num">4</div>
-        <div class="step-text">물 600ml를 붓고 <em>뚜껑을 덮어 중불</em>에서 15~20분 끓인다. 감자가 젓가락으로 쑥 들어가면 완성.</div>
+        <div class="step-text">물 <span id="step-water">800ml</span>를 붓고 <em>뚜껑을 덮어 중불</em>에서 15~20분 끓인다. 감자가 젓가락으로 쑥 들어가면 완성.</div>
       </div>
       <div class="step">
         <div class="step-num">5</div>
@@ -315,5 +367,31 @@
     </div>
   </div>
 
+  <script>
+    const servingButtons = document.querySelectorAll('.serving-button');
+    const amountNodes = document.querySelectorAll('[data-amount]');
+    const servingText = document.getElementById('serving-text');
+    const stepWater = document.getElementById('step-water');
+
+    function updateServing(serving) {
+      servingText.textContent = `${serving}인분`;
+
+      amountNodes.forEach((node) => {
+        const amounts = JSON.parse(node.dataset.amount);
+        node.textContent = amounts[serving];
+      });
+
+      const waterAmount = document.querySelector('.ingredient-row span[data-amount*="ml"]').textContent;
+      stepWater.textContent = waterAmount;
+
+      servingButtons.forEach((button) => {
+        button.setAttribute('aria-pressed', String(button.dataset.serving === serving));
+      });
+    }
+
+    servingButtons.forEach((button) => {
+      button.addEventListener('click', () => updateServing(button.dataset.serving));
+    });
+  </script>
 </body>
 </html>
