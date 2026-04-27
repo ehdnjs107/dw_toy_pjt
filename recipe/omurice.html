@@ -26,7 +26,6 @@
       min-height: 100vh;
     }
 
-    /* ── 히어로 ── */
     .hero {
       position: relative;
       height: 55vw;
@@ -71,7 +70,6 @@
       border: 1px solid rgba(255,255,255,0.15);
     }
 
-    /* ── 콘텐츠 ── */
     .content {
       padding: 0 1.5rem 4rem;
       margin-top: -2rem;
@@ -105,12 +103,11 @@
       margin-bottom: 2rem;
     }
 
-    /* ── 정보 칩 ── */
     .info-chips {
       display: flex;
       gap: 0.6rem;
       flex-wrap: wrap;
-      margin-bottom: 2.2rem;
+      margin-bottom: 1rem;
     }
 
     .chip {
@@ -124,7 +121,47 @@
 
     .chip strong { color: var(--gold-light); margin-right: 0.3rem; }
 
-    /* ── 섹션 ── */
+    .serving-control {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 2.2rem;
+    }
+
+    .serving-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.12em;
+      margin-bottom: 0.75rem;
+    }
+
+    .serving-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.55rem;
+    }
+
+    .serving-button {
+      min-height: 42px;
+      border: 1px solid rgba(212,168,67,0.28);
+      border-radius: 999px;
+      background: var(--surface2);
+      color: var(--muted);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+
+    .serving-button[aria-pressed="true"] {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #0f0d0a;
+    }
+
     .section-title {
       font-size: 0.65rem;
       letter-spacing: 0.2em;
@@ -132,7 +169,6 @@
       margin-bottom: 1rem;
     }
 
-    /* ── 재료 ── */
     .ingredients {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -161,6 +197,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 1rem;
       padding: 0.45rem 0;
       border-bottom: 1px solid rgba(210,160,80,0.06);
       font-size: 0.85rem;
@@ -172,9 +209,9 @@
       color: var(--muted);
       font-size: 0.78rem;
       flex-shrink: 0;
+      text-align: right;
     }
 
-    /* ── 조리 단계 ── */
     .steps { margin-bottom: 2rem; }
 
     .step {
@@ -214,7 +251,6 @@
       font-weight: 600;
     }
 
-    /* ── 팁 ── */
     .tip-box {
       background: rgba(212,168,67,0.07);
       border: 1px solid rgba(212,168,67,0.25);
@@ -239,7 +275,6 @@
 </head>
 <body>
 
-  <!-- 히어로 -->
   <div class="hero">
     <img class="hero-img"
       src="%EC%98%A4%EB%AF%80%EB%9D%BC%EC%9D%B4%EC%8A%A4.jpg"
@@ -250,40 +285,46 @@
     </div>
   </div>
 
-  <!-- 콘텐츠 -->
   <div class="content">
     <div class="dish-tag">밥 · 계란 · 일식</div>
     <h1>오므라이스</h1>
     <p class="dish-desc">부드럽고 얇은 달걀 옷으로 케첩 볶음밥을 감싼 일본식 가정 요리.<br>만들기 쉽고 맛도 좋아 자주 해먹게 되는 메뉴.</p>
 
     <div class="info-chips">
-      <div class="chip"><strong>2인분</strong></div>
+      <div class="chip"><strong id="serving-text">2인분</strong> 기준</div>
       <div class="chip"><strong>⏱</strong> 약 20분</div>
       <div class="chip"><strong>난이도</strong> 쉬움</div>
     </div>
 
-    <!-- 재료 -->
+    <div class="serving-control" aria-label="인분 선택">
+      <div class="serving-label">SERVINGS · 인분 설정</div>
+      <div class="serving-buttons">
+        <button class="serving-button" type="button" data-serving="1" aria-pressed="false">1인분</button>
+        <button class="serving-button" type="button" data-serving="2" aria-pressed="true">2인분</button>
+        <button class="serving-button" type="button" data-serving="3" aria-pressed="false">3인분</button>
+      </div>
+    </div>
+
     <div class="section-title">INGREDIENTS · 재료</div>
     <div class="ingredients">
       <div class="ingredient-group">
         <div class="ingredient-group-label">주재료</div>
-        <div class="ingredient-row"><span>찬밥</span><span class="ingredient-amount">2공기</span></div>
-        <div class="ingredient-row"><span>달걀</span><span class="ingredient-amount">4개</span></div>
-        <div class="ingredient-row"><span>닭가슴살 or 소시지</span><span class="ingredient-amount">100g</span></div>
-        <div class="ingredient-row"><span>양파</span><span class="ingredient-amount">½개</span></div>
-        <div class="ingredient-row"><span>당근</span><span class="ingredient-amount">¼개</span></div>
-        <div class="ingredient-row"><span>냉동 완두콩</span><span class="ingredient-amount">30g</span></div>
+        <div class="ingredient-row"><span>찬밥</span><span class="ingredient-amount" data-amount='{"1":"1공기","2":"2공기","3":"3공기"}'>2공기</span></div>
+        <div class="ingredient-row"><span>달걀</span><span class="ingredient-amount" data-amount='{"1":"2개","2":"4개","3":"6개"}'>4개</span></div>
+        <div class="ingredient-row"><span>닭가슴살 or 소시지</span><span class="ingredient-amount" data-amount='{"1":"50g","2":"100g","3":"150g"}'>100g</span></div>
+        <div class="ingredient-row"><span>양파</span><span class="ingredient-amount" data-amount='{"1":"1/4개","2":"1/2개","3":"3/4개"}'>1/2개</span></div>
+        <div class="ingredient-row"><span>당근</span><span class="ingredient-amount" data-amount='{"1":"1/8개","2":"1/4개","3":"1/3개"}'>1/4개</span></div>
+        <div class="ingredient-row"><span>냉동 완두콩</span><span class="ingredient-amount" data-amount='{"1":"15g","2":"30g","3":"45g"}'>30g</span></div>
       </div>
       <div class="ingredient-group">
         <div class="ingredient-group-label">양념 · 기타</div>
-        <div class="ingredient-row"><span>케첩</span><span class="ingredient-amount">4큰술</span></div>
-        <div class="ingredient-row"><span>버터</span><span class="ingredient-amount">1큰술</span></div>
-        <div class="ingredient-row"><span>우유</span><span class="ingredient-amount">1큰술 (달걀에)</span></div>
-        <div class="ingredient-row"><span>소금, 후추</span><span class="ingredient-amount">약간</span></div>
+        <div class="ingredient-row"><span>케첩</span><span class="ingredient-amount" data-amount='{"1":"2큰술","2":"4큰술","3":"6큰술"}'>4큰술</span></div>
+        <div class="ingredient-row"><span>버터</span><span class="ingredient-amount" data-amount='{"1":"1/2큰술","2":"1큰술","3":"1.5큰술"}'>1큰술</span></div>
+        <div class="ingredient-row"><span>우유</span><span class="ingredient-amount" data-amount='{"1":"1/2큰술 (달걀에)","2":"1큰술 (달걀에)","3":"1.5큰술 (달걀에)"}'>1큰술 (달걀에)</span></div>
+        <div class="ingredient-row"><span>소금, 후추</span><span class="ingredient-amount" data-amount='{"1":"약간","2":"약간","3":"약간"}'>약간</span></div>
       </div>
     </div>
 
-    <!-- 조리 단계 -->
     <div class="section-title">STEPS · 조리 방법</div>
     <div class="steps">
       <div class="step">
@@ -296,11 +337,11 @@
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <div class="step-text">찬밥을 넣고 <em>케첩 3큰술</em>을 넣어 고루 섞어가며 볶음밥을 만든다. 소금·후추로 간.</div>
+        <div class="step-text">찬밥을 넣고 <em>케첩 <span id="step-ketchup">4큰술</span></em>을 넣어 고루 섞어가며 볶음밥을 만든다. 소금·후추로 간.</div>
       </div>
       <div class="step">
         <div class="step-num">4</div>
-        <div class="step-text">달걀 2개에 우유 ½큰술, 소금 한 꼬집을 넣고 잘 풀어준다. 팬에 기름을 두르고 <em>약불</em>에서 얇게 부친다.</div>
+        <div class="step-text">달걀 <span id="step-eggs">4개</span>에 우유 <span id="step-milk">1큰술</span>, 소금 한 꼬집을 넣고 잘 풀어준다. 팬에 기름을 두르고 <em>약불</em>에서 얇게 부친다.</div>
       </div>
       <div class="step">
         <div class="step-num">5</div>
@@ -312,7 +353,6 @@
       </div>
     </div>
 
-    <!-- 팁 -->
     <div class="section-title">TIP</div>
     <div class="tip-box">
       <div class="tip-title">맛있게 만드는 포인트</div>
@@ -322,5 +362,46 @@
     </div>
   </div>
 
+  <script>
+    const servingButtons = document.querySelectorAll('.serving-button');
+    const amountNodes = document.querySelectorAll('[data-amount]');
+    const servingText = document.getElementById('serving-text');
+    const stepKetchup = document.getElementById('step-ketchup');
+    const stepEggs = document.getElementById('step-eggs');
+    const stepMilk = document.getElementById('step-milk');
+
+    function amountFor(label, serving) {
+      const node = document.querySelector(`[data-label="${label}"]`);
+      const amounts = JSON.parse(node.dataset.amount);
+      return amounts[serving];
+    }
+
+    function updateServing(serving) {
+      servingText.textContent = `${serving}인분`;
+
+      amountNodes.forEach((node) => {
+        const amounts = JSON.parse(node.dataset.amount);
+        node.textContent = amounts[serving];
+      });
+
+      stepKetchup.textContent = amountFor('케첩', serving);
+      stepEggs.textContent = amountFor('달걀', serving);
+      stepMilk.textContent = amountFor('우유', serving).replace(' (달걀에)', '');
+
+      servingButtons.forEach((button) => {
+        button.setAttribute('aria-pressed', String(button.dataset.serving === serving));
+      });
+    }
+
+    document.querySelectorAll('.ingredient-row').forEach((row) => {
+      const label = row.querySelector('span:first-child').textContent;
+      const amount = row.querySelector('[data-amount]');
+      if (amount) amount.dataset.label = label;
+    });
+
+    servingButtons.forEach((button) => {
+      button.addEventListener('click', () => updateServing(button.dataset.serving));
+    });
+  </script>
 </body>
 </html>
