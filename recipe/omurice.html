@@ -137,29 +137,17 @@
       margin-bottom: 0.75rem;
     }
 
-    .serving-buttons {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.55rem;
-    }
-
-    .serving-button {
-      min-height: 42px;
+    .serving-select {
+      width: 100%;
+      min-height: 44px;
       border: 1px solid rgba(212,168,67,0.28);
-      border-radius: 999px;
+      border-radius: 10px;
       background: var(--surface2);
-      color: var(--muted);
+      color: var(--text);
       font: inherit;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       font-weight: 700;
-      cursor: pointer;
-      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-    }
-
-    .serving-button[aria-pressed="true"] {
-      background: var(--gold);
-      border-color: var(--gold);
-      color: #0f0d0a;
+      padding: 0 0.85rem;
     }
 
     .section-title {
@@ -273,7 +261,7 @@
     }
   </style>
 </head>
-<body>
+<body data-base-serving="2">
 
   <div class="hero">
     <img class="hero-img"
@@ -298,30 +286,37 @@
 
     <div class="serving-control" aria-label="인분 선택">
       <div class="serving-label">SERVINGS · 인분 설정</div>
-      <div class="serving-buttons">
-        <button class="serving-button" type="button" data-serving="1" aria-pressed="false">1인분</button>
-        <button class="serving-button" type="button" data-serving="2" aria-pressed="true">2인분</button>
-        <button class="serving-button" type="button" data-serving="3" aria-pressed="false">3인분</button>
-      </div>
+      <select id="serving-select" class="serving-select">
+        <option value="1">1인분</option>
+        <option value="2" selected>2인분</option>
+        <option value="3">3인분</option>
+        <option value="4">4인분</option>
+        <option value="5">5인분</option>
+        <option value="6">6인분</option>
+        <option value="7">7인분</option>
+        <option value="8">8인분</option>
+        <option value="9">9인분</option>
+        <option value="10">10인분</option>
+      </select>
     </div>
 
     <div class="section-title">INGREDIENTS · 재료</div>
     <div class="ingredients">
       <div class="ingredient-group">
         <div class="ingredient-group-label">주재료</div>
-        <div class="ingredient-row"><span>찬밥</span><span class="ingredient-amount" data-amount='{"1":"1공기","2":"2공기","3":"3공기"}'>2공기</span></div>
-        <div class="ingredient-row"><span>달걀</span><span class="ingredient-amount" data-amount='{"1":"2개","2":"4개","3":"6개"}'>4개</span></div>
-        <div class="ingredient-row"><span>닭가슴살 or 소시지</span><span class="ingredient-amount" data-amount='{"1":"50g","2":"100g","3":"150g"}'>100g</span></div>
-        <div class="ingredient-row"><span>양파</span><span class="ingredient-amount" data-amount='{"1":"1/4개","2":"1/2개","3":"3/4개"}'>1/2개</span></div>
-        <div class="ingredient-row"><span>당근</span><span class="ingredient-amount" data-amount='{"1":"1/8개","2":"1/4개","3":"1/3개"}'>1/4개</span></div>
-        <div class="ingredient-row"><span>냉동 완두콩</span><span class="ingredient-amount" data-amount='{"1":"15g","2":"30g","3":"45g"}'>30g</span></div>
+        <div class="ingredient-row"><span>찬밥</span><span class="ingredient-amount" data-base="2" data-unit="공기" data-step="0.5"></span></div>
+        <div class="ingredient-row"><span>달걀</span><span class="ingredient-amount" data-base="4" data-unit="개" data-step="1"></span></div>
+        <div class="ingredient-row"><span>닭가슴살 or 소시지</span><span class="ingredient-amount" data-base="100" data-unit="g" data-step="5"></span></div>
+        <div class="ingredient-row"><span>양파</span><span class="ingredient-amount" data-base="0.5" data-unit="개" data-step="0.25"></span></div>
+        <div class="ingredient-row"><span>당근</span><span class="ingredient-amount" data-base="0.25" data-unit="개" data-step="0.25"></span></div>
+        <div class="ingredient-row"><span>냉동 완두콩</span><span class="ingredient-amount" data-base="30" data-unit="g" data-step="5"></span></div>
       </div>
       <div class="ingredient-group">
         <div class="ingredient-group-label">양념 · 기타</div>
-        <div class="ingredient-row"><span>케첩</span><span class="ingredient-amount" data-amount='{"1":"2큰술","2":"4큰술","3":"6큰술"}'>4큰술</span></div>
-        <div class="ingredient-row"><span>버터</span><span class="ingredient-amount" data-amount='{"1":"1/2큰술","2":"1큰술","3":"1.5큰술"}'>1큰술</span></div>
-        <div class="ingredient-row"><span>우유</span><span class="ingredient-amount" data-amount='{"1":"1/2큰술 (달걀에)","2":"1큰술 (달걀에)","3":"1.5큰술 (달걀에)"}'>1큰술 (달걀에)</span></div>
-        <div class="ingredient-row"><span>소금, 후추</span><span class="ingredient-amount" data-amount='{"1":"약간","2":"약간","3":"약간"}'>약간</span></div>
+        <div class="ingredient-row"><span>케첩</span><span class="ingredient-amount" data-base="4" data-unit="큰술" data-step="0.5"></span></div>
+        <div class="ingredient-row"><span>버터</span><span class="ingredient-amount" data-base="1" data-unit="큰술" data-step="0.25"></span></div>
+        <div class="ingredient-row"><span>우유</span><span class="ingredient-amount" data-base="1" data-unit="큰술" data-suffix=" (달걀에)" data-step="0.25"></span></div>
+        <div class="ingredient-row"><span>소금, 후추</span><span class="ingredient-amount" data-fixed="약간"></span></div>
       </div>
     </div>
 
@@ -337,11 +332,11 @@
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <div class="step-text">찬밥을 넣고 <em>케첩 <span id="step-ketchup">4큰술</span></em>을 넣어 고루 섞어가며 볶음밥을 만든다. 소금·후추로 간.</div>
+        <div class="step-text">찬밥을 넣고 <em>케첩 <span data-base="4" data-unit="큰술" data-step="0.5"></span></em>을 넣어 고루 섞어가며 볶음밥을 만든다. 소금·후추로 간.</div>
       </div>
       <div class="step">
         <div class="step-num">4</div>
-        <div class="step-text">달걀 <span id="step-eggs">4개</span>에 우유 <span id="step-milk">1큰술</span>, 소금 한 꼬집을 넣고 잘 풀어준다. 팬에 기름을 두르고 <em>약불</em>에서 얇게 부친다.</div>
+        <div class="step-text">달걀 <span data-base="4" data-unit="개" data-step="1"></span>에 우유 <span data-base="1" data-unit="큰술" data-step="0.25"></span>, 소금 한 꼬집을 넣고 잘 풀어준다. 팬에 기름을 두르고 <em>약불</em>에서 얇게 부친다.</div>
       </div>
       <div class="step">
         <div class="step-num">5</div>
@@ -363,45 +358,40 @@
   </div>
 
   <script>
-    const servingButtons = document.querySelectorAll('.serving-button');
-    const amountNodes = document.querySelectorAll('[data-amount]');
+    const baseServing = Number(document.body.dataset.baseServing);
+    const servingSelect = document.getElementById('serving-select');
     const servingText = document.getElementById('serving-text');
-    const stepKetchup = document.getElementById('step-ketchup');
-    const stepEggs = document.getElementById('step-eggs');
-    const stepMilk = document.getElementById('step-milk');
+    const amountNodes = document.querySelectorAll('[data-base], [data-min-base], [data-fixed]');
 
-    function amountFor(label, serving) {
-      const node = document.querySelector(`[data-label="${label}"]`);
-      const amounts = JSON.parse(node.dataset.amount);
-      return amounts[serving];
+    function roundTo(value, step) {
+      return Math.round(value / step) * step;
     }
 
-    function updateServing(serving) {
+    function cleanNumber(value) {
+      const rounded = Math.round(value * 100) / 100;
+      return String(rounded).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+    }
+
+    function formatAmount(node, serving) {
+      if (node.dataset.fixed) return node.dataset.fixed;
+
+      const unit = node.dataset.unit || '';
+      const suffix = node.dataset.suffix || '';
+      const step = Number(node.dataset.step || 0.25);
+      const value = roundTo(Number(node.dataset.base) * serving / baseServing, step);
+      return `${cleanNumber(value)}${unit}${suffix}`;
+    }
+
+    function updateServing() {
+      const serving = Number(servingSelect.value);
       servingText.textContent = `${serving}인분`;
-
       amountNodes.forEach((node) => {
-        const amounts = JSON.parse(node.dataset.amount);
-        node.textContent = amounts[serving];
-      });
-
-      stepKetchup.textContent = amountFor('케첩', serving);
-      stepEggs.textContent = amountFor('달걀', serving);
-      stepMilk.textContent = amountFor('우유', serving).replace(' (달걀에)', '');
-
-      servingButtons.forEach((button) => {
-        button.setAttribute('aria-pressed', String(button.dataset.serving === serving));
+        node.textContent = formatAmount(node, serving);
       });
     }
 
-    document.querySelectorAll('.ingredient-row').forEach((row) => {
-      const label = row.querySelector('span:first-child').textContent;
-      const amount = row.querySelector('[data-amount]');
-      if (amount) amount.dataset.label = label;
-    });
-
-    servingButtons.forEach((button) => {
-      button.addEventListener('click', () => updateServing(button.dataset.serving));
-    });
+    servingSelect.addEventListener('change', updateServing);
+    updateServing();
   </script>
 </body>
 </html>
