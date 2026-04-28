@@ -542,25 +542,16 @@
         <div class="section-title">⏰ 지옥 복귀까지 남은 시간</div>
         <div class="clock-display" id="clock-display">
             <div class="clock-unit">
-                <span class="clock-value">0</span>
-                <div class="clock-label">일</div>
-            </div>
-            <div class="clock-sep">:</div>
-            <div class="clock-unit">
-                <span class="clock-value">00</span>
-                <div class="clock-label">시간</div>
-            </div>
-            <div class="clock-sep">:</div>
-            <div class="clock-unit">
-                <span class="clock-value">00</span>
+                <span class="clock-value" id="remain-min">00</span>
                 <div class="clock-label">분</div>
             </div>
             <div class="clock-sep">:</div>
             <div class="clock-unit">
-                <span class="clock-value">00</span>
+                <span class="clock-value" id="remain-sec">00</span>
                 <div class="clock-label">초</div>
             </div>
         </div>
+        <div class="dday-sub" id="clock-msg">얼마 안남았네.</div>
     </section>
 
     <div class="divider"></div>
@@ -699,6 +690,36 @@ function goSlide(n) {
 function moveSlide(dir) { goSlide(cur + dir); }
 
 setInterval(() => goSlide(cur + 1), 3500);
+
+
+/* =========== COUNTDOWN (MIN:SEC) =========== */
+(function initCountdown(){
+    const target = new Date('2026-04-29T09:00:00+09:00').getTime();
+    const minEl = document.getElementById('remain-min');
+    const secEl = document.getElementById('remain-sec');
+    const msgEl = document.getElementById('clock-msg');
+
+    let timer;
+
+    function tick(){
+        const now = Date.now();
+        let diff = Math.max(0, target - now);
+        const totalSec = Math.floor(diff / 1000);
+        const min = Math.floor(totalSec / 60);
+        const sec = totalSec % 60;
+
+        minEl.textContent = String(min).padStart(2, '0');
+        secEl.textContent = String(sec).padStart(2, '0');
+
+        if (diff <= 0) {
+            msgEl.textContent = '출근 시간 도착!';
+            if (timer) clearInterval(timer);
+        }
+    }
+
+    tick();
+    timer = setInterval(tick, 1000);
+})();
 
 /* =========== TODO LIST =========== */
 const TODOS = [
