@@ -7,6 +7,11 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
             background: linear-gradient(160deg, #050505 0%, #11070c 45%, #080b14 100%);
@@ -184,6 +189,16 @@
             letter-spacing: 0.02em;
         }
 
+
+        .dday-number {
+            max-width: 100%;
+            overflow-wrap: anywhere;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
         /* ── CLOCK ── */
         .clock-section {
             max-width: 720px;
@@ -205,11 +220,13 @@
         }
 
         .clock-display {
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
             flex-wrap: nowrap;
+            overflow: hidden;
         }
 
         .clock-unit { text-align: center; }
