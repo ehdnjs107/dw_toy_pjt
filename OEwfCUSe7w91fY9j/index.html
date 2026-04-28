@@ -238,16 +238,33 @@
 
   let resolvedPat = null;
 
-  function checkPw() {
+  async function checkPw() {
     const val = document.getElementById('pwInput').value.trim();
-    if (val.length === 4) {
-      resolvedPat = CONFIG.p1 + val + CONFIG.p2;
-      document.getElementById('screenAuth').style.display = 'none';
-      document.getElementById('screenUpload').style.display = 'block';
-    } else {
-      const msg = document.getElementById('authMsg');
+    const msg = document.getElementById('authMsg');
+    if (val.length !== 4) {
+      msg.textContent = '비밀번호가 틀렸습니다.';
       msg.classList.add('show');
       setTimeout(() => msg.classList.remove('show'), 2000);
+      return;
+    }
+
+    const candidate = CONFIG.p1 + val + CONFIG.p2;
+    try {
+      const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.uploadDir}?ref=${CONFIG.branch}`, {
+        headers: {
+          'Authorization': `token ${candidate}`,
+          'Accept': 'application/vnd.github+json',
+        }
+      });
+      if (!res.ok) throw new Error('auth failed');
+      resolvedPat = candidate;
+      document.getElementById('screenAuth').style.display = 'none';
+      document.getElementById('screenUpload').style.display = 'block';
+    } catch {
+      resolvedPat = null;
+      msg.textContent = 'GitHub 인증에 실패했습니다. 토큰 또는 권한을 확인하세요.';
+      msg.classList.add('show');
+      setTimeout(() => msg.classList.remove('show'), 3000);
     }
   }
 
