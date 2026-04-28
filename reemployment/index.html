@@ -140,7 +140,7 @@
             margin: 10px 30px;
         }
 
-        /* ── D-DAY ── */
+        /* ── DATE NOTICE ── */
         .dday-section {
             text-align: center;
             padding: 60px 20px;
@@ -237,13 +237,6 @@
         }
 
         @keyframes blink { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.1; } }
-
-        #clock-done {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #ffd700;
-            display: none;
-        }
 
         /* ── SLIDESHOW ── */
         .slideshow-section {
@@ -527,11 +520,11 @@
 
     <div class="divider"></div>
 
-    <!-- D-DAY -->
+    <!-- DATE NOTICE -->
     <section class="dday-section">
-        <div class="dday-label">지옥 복귀까지</div>
-        <span class="dday-number" id="dday-number">D-?</span>
-        <div class="dday-sub">재취업일: 2026년 5월 1일</div>
+        <div class="dday-label">재취업일 미정</div>
+        <span class="dday-number">?</span>
+        <div class="dday-sub">언제인지 공유 바람</div>
     </section>
 
     <div class="divider"></div>
@@ -541,26 +534,25 @@
         <div class="section-title">⏰ 지옥 복귀까지 남은 시간</div>
         <div class="clock-display" id="clock-display">
             <div class="clock-unit">
-                <span class="clock-value" id="c-days">00</span>
+                <span class="clock-value">?</span>
                 <div class="clock-label">일</div>
             </div>
             <div class="clock-sep">:</div>
             <div class="clock-unit">
-                <span class="clock-value" id="c-hours">00</span>
+                <span class="clock-value">?</span>
                 <div class="clock-label">시간</div>
             </div>
             <div class="clock-sep">:</div>
             <div class="clock-unit">
-                <span class="clock-value" id="c-mins">00</span>
+                <span class="clock-value">?</span>
                 <div class="clock-label">분</div>
             </div>
             <div class="clock-sep">:</div>
             <div class="clock-unit">
-                <span class="clock-value" id="c-secs">00</span>
+                <span class="clock-value">?</span>
                 <div class="clock-label">초</div>
             </div>
         </div>
-        <p id="clock-done">🔥 고결누리, 지옥에 다시 온걸 환영해 🔥</p>
     </section>
 
     <div class="divider"></div>
@@ -612,7 +604,6 @@
         </div>
         <div class="gb-entries" id="gb-entries"></div>
     </section>
-
 
 </div><!-- /main -->
 
@@ -682,46 +673,6 @@
     loop();
 })();
 
-/* =========== D-DAY =========== */
-function updateDDay() {
-    const now = new Date();
-    const target = new Date('2026-05-01T00:00:00');
-    const diff = target - now;
-    const el = document.getElementById('dday-number');
-    if (diff <= 0) {
-        const past = Math.floor(-diff / 86400000);
-        el.textContent = past === 0 ? 'D-DAY! 🎊' : `D+${past}`;
-    } else {
-        el.textContent = `D-${Math.ceil(diff / 86400000)}`;
-    }
-}
-updateDDay();
-
-/*/* =========== REEMPLOYMENT CLOCK =========== */
-function updateClock() {
-    const now = new Date();
-    const target = new Date('2026-05-01T09:00:00');
-    const diff = target - now;
-
-    if (diff <= 0) {
-        document.getElementById('clock-display').style.display = 'none';
-        document.getElementById('clock-done').style.display = 'block';
-        return;
-    }
-
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-
-    document.getElementById('c-days').textContent  = String(d).padStart(2,'0');
-    document.getElementById('c-hours').textContent = String(h).padStart(2,'0');
-    document.getElementById('c-mins').textContent  = String(m).padStart(2,'0');
-    document.getElementById('c-secs').textContent  = String(s).padStart(2,'0');
-}
-updateClock();
-setInterval(updateClock, 1000);
-
 /* =========== SLIDESHOW =========== */
 const slides = document.querySelectorAll('.slide-img');
 const dots   = document.querySelectorAll('.dot');
@@ -786,7 +737,7 @@ const TODOS = [
 
 /* =========== GUESTBOOK =========== */
 const JB = {
-    id:  '69eb1638856a68218968ffbc',
+    id:  '69f0c4c136566621a800121b',
     key: '$2a$10$rzik04bmILmxmtcA59LAK.EZDc3bPigikzqrzNFz4fli1v/WhwMAe',
     url() { return `https://api.jsonbin.io/v3/b/${this.id}`; }
 };
@@ -797,7 +748,8 @@ async function loadGB() {
     });
     if (!res.ok) throw new Error('load failed');
     const data = await res.json();
-    return data.record.entries || [];
+    const record = data.record || {};
+    return Array.isArray(record.entries) ? record.entries : [];
 }
 
 async function saveGB(entries) {
@@ -893,7 +845,7 @@ function spawnBubble(entry) {
     el.className = 'bubble';
     const dur  = 12 + Math.random() * 8;
     const top  = 10 + Math.random() * 72;
-    el.style.top             = top + 'px';
+    el.style.top = top + 'px';
     el.style.animationDuration = dur + 's';
     const preview = entry.msg.length > 36 ? entry.msg.slice(0, 36) + '…' : entry.msg;
     el.innerHTML = `<strong>${escHtml(entry.name)}</strong>: ${escHtml(preview)}`;
@@ -901,8 +853,6 @@ function spawnBubble(entry) {
     setTimeout(() => el.remove(), dur * 1000);
 }
 
-
-/* =========== INIT =========== */
 renderGB();
 </script>
 </body>
