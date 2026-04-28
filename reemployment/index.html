@@ -729,7 +729,9 @@ setInterval(() => goSlide(cur + 1), 3500);
         secEl.textContent = String(sec).padStart(2, '0');
 
         if (diff <= 0) {
-            msgEl.textContent = '출근 시간 도착!';
+            minEl.textContent = '00';
+            secEl.textContent = '00';
+            msgEl.textContent = '어서와 지옥은 처음... 은 아니지?';
             if (timer) clearInterval(timer);
         }
     }
