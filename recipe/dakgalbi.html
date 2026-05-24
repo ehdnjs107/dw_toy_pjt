@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>닭갈비 사진 기록</title>
+  <style>
+    :root {
+      --bg: #0f0d0a;
+      --surface: #1a1612;
+      --surface2: #221e18;
+      --border: rgba(210, 160, 80, 0.15);
+      --gold: #d4a843;
+      --gold-light: #f0c060;
+      --text: #f5f0e8;
+      --muted: #9a8870;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .hero {
+      position: relative;
+      height: 64vw;
+      max-height: 420px;
+      overflow: hidden;
+    }
+
+    .hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 54%;
+      filter: brightness(0.76) saturate(1.12);
+      transform: scale(1.01);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(15,13,10,0.05) 20%, var(--bg) 100%);
+    }
+
+    .hero-badge-wrap {
+      position: absolute;
+      top: 1.2rem;
+      left: 1.5rem;
+    }
+
+    .back-link {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.78);
+      text-decoration: none;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+      padding: 0.3rem 0.9rem;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .content {
+      padding: 0 1.5rem 4rem;
+      margin-top: -2.4rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .dish-tag {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      border: 1px solid rgba(212,168,67,0.4);
+      padding: 0.2rem 0.7rem;
+      border-radius: 50px;
+      margin-bottom: 0.7rem;
+    }
+
+    h1 {
+      font-size: 2.35rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 0.55rem;
+    }
+
+    .dish-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 1.4rem;
+    }
+
+    .info-chips {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .chip strong { color: var(--gold-light); margin-right: 0.3rem; }
+
+    .section-title {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .photo-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 1.4rem;
+    }
+
+    .photo-card img {
+      width: 100%;
+      display: block;
+    }
+
+    .photo-caption {
+      padding: 1.1rem 1.2rem;
+      font-size: 0.84rem;
+      line-height: 1.75;
+      color: var(--muted);
+    }
+
+    .note-box {
+      background: rgba(212,168,67,0.07);
+      border: 1px solid rgba(212,168,67,0.25);
+      border-radius: 14px;
+      padding: 1.15rem 1.25rem;
+    }
+
+    .note-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.45rem;
+      letter-spacing: 0.05em;
+    }
+
+    .note-box p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <img class="hero-img" src="dakgalbi.jpg" alt="닭갈비" />
+    <div class="hero-overlay"></div>
+    <div class="hero-badge-wrap">
+      <a class="back-link" href="index.html">← 레시피 목록</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="dish-tag">사진 기록 · 닭갈비</div>
+    <h1>닭갈비</h1>
+    <p class="dish-desc">팬에서 막 볶아낸 닭갈비 사진 기록.<br>감자, 양파, 우동면이 양념에 같이 섞인 든든한 한 팬 요리.</p>
+
+    <div class="info-chips">
+      <div class="chip"><strong>PHOTO</strong> 업로드 이미지</div>
+      <div class="chip"><strong>MENU</strong> 닭갈비</div>
+      <div class="chip"><strong>STYLE</strong> 한 팬 요리</div>
+    </div>
+
+    <div class="section-title">PHOTO</div>
+    <div class="photo-card">
+      <img src="dakgalbi.jpg" alt="팬에 담긴 닭갈비" />
+      <div class="photo-caption">
+        매콤한 양념에 닭고기, 감자, 양파, 우동면을 함께 볶은 닭갈비. 팬째로 담겨 있어 바로 먹는 느낌을 살렸다.
+      </div>
+    </div>
+
+    <div class="section-title">MEMO</div>
+    <div class="note-box">
+      <div class="note-title">다음에 기록할 것</div>
+      <p>정확한 양념 비율과 조리 순서를 정리하면 이 페이지를 레시피 버전으로 확장할 수 있다.</p>
+    </div>
+  </div>
+
+</body>
+</html>
