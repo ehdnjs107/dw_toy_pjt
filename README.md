@@ -21,7 +21,8 @@
 
 ```
 dw_toy_pjt/
-├── index.html              ← 허브 (전체 프로젝트 목록)
+├── index.html              ← 의도적으로 비워둔 루트 페이지 (보안용)
+├── ppfzuQLp2vBO/           ← 메인 허브 페이지 (비공개 URL)
 ├── uploads/                ← 모바일 업로드 임시 보관함 (비워도 됨)
 ├── OEwfCUSe7w91fY9j/       ← 업로드 페이지 (비공개 URL)
 ├── skygarden/              ← 가상공중정원 안내 페이지
@@ -34,6 +35,10 @@ dw_toy_pjt/
 
 > **규칙**: 이미지는 `uploads/`에서 작업 후 해당 프로젝트 폴더로 복사해서 사용.  
 > `uploads/`는 임시 보관함이므로 언제든 비워도 무방.
+
+> **중요 보안 규칙**: 루트 `index.html`은 의도적으로 빈 페이지로 둔다.  
+> 전체 프로젝트 링크는 비공개 허브 URL인 `ppfzuQLp2vBO/`에서 관리하며, 루트 `/dw_toy_pjt/`를 허브로 바꾸거나 자동 리다이렉트하지 않는다.  
+> 새 페이지를 추가할 때도 루트가 아닌 `ppfzuQLp2vBO/index.html`에 링크를 추가한다.
 
 ---
 
@@ -53,7 +58,7 @@ git push
 
 ### 1. 일반 페이지 제작
 1. 클로드에게 원하는 페이지 요청
-2. 클로드가 HTML 파일 생성 및 허브(`index.html`) 카드 추가
+2. 클로드가 HTML 파일 생성 및 비공개 허브(`ppfzuQLp2vBO/index.html`) 카드 추가
 3. `git push` → GitHub Pages 자동 배포 (1~3분 소요)
 
 ### 2. 이미지 활용 페이지 제작
@@ -92,7 +97,8 @@ git push
 
 | 페이지 | URL | 설명 |
 |--------|-----|------|
-| 허브 | /dw_toy_pjt/ | 전체 프로젝트 카드 목록 |
+| 루트 | /dw_toy_pjt/ | 의도적으로 비워둔 페이지. 허브로 변경 금지 |
+| 비공개 허브 | /dw_toy_pjt/ppfzuQLp2vBO/ | 전체 프로젝트 카드 목록 |
 | 가상공중정원 | /dw_toy_pjt/skygarden/ | 공원 안내 (역사, 이용안내, 약도, 오시는길) |
 | 레시피 목록 | /dw_toy_pjt/recipe/ | 요리 레시피 모음 |
 | 오므라이스 | /dw_toy_pjt/recipe/omurice.html | 오므라이스 레시피 상세 |
@@ -104,7 +110,8 @@ git push
 - [ ] 프로젝트 폴더 생성 (`mkdir 폴더명`)
 - [ ] `index.html` 작성 (모바일 기준 디자인)
 - [ ] 이미지 있으면 해당 폴더로 복사
-- [ ] 허브 `index.html`에 카드 추가
+- [ ] 비공개 허브 `ppfzuQLp2vBO/index.html`에 카드 추가
+- [ ] 루트 `index.html`은 빈 페이지로 유지
 - [ ] `git add . && git commit -m "설명" && git push`
 
 ---
