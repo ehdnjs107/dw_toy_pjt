@@ -1,3 +1,7 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
 (function () {
   "use strict";
 
@@ -67,9 +71,20 @@
     "2028-12-25": "성탄절"
   };
 
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyC54ZHMG2_b0M7drYyIw0B4yWJt4Q2OE3I",
+    authDomain: "friends-calendar-85abf.firebaseapp.com",
+    databaseURL: "https://friends-calendar-85abf-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "friends-calendar-85abf",
+    storageBucket: "friends-calendar-85abf.firebasestorage.app",
+    messagingSenderId: "358834088863",
+    appId: "1:358834088863:web:353823d71c56e1888d2baa"
+  };
+
   const clientId = Math.random().toString(36).slice(2);
   const params = new URLSearchParams(window.location.search);
   const boardId = params.get("board") || "default";
+  const inviteToken = params.get("invite");
   const storageKey = STORAGE_PREFIX + boardId;
   const channel = "BroadcastChannel" in window ? new BroadcastChannel(CHANNEL_NAME) : null;
 
@@ -107,17 +122,23 @@
   let summaryRefreshFrame = null;
   let pendingConfirmDate = null;
   let initialScrollDone = false;
+  let firebaseDatabase = null;
+  let firebaseUser = null;
+  let firebaseReady = false;
+  let syncedState = null;
 
   init();
 
   function init() {
-    els.banner.hidden = false;
+    els.banner.hidden = Boolean(inviteToken);
     els.title.value = state.meta.title;
     els.thresholdInput.value = Math.round(state.meta.likelyThreshold * 100);
     updateThresholdLabel();
     render();
     attachEvents();
     requestAnimationFrame(scrollTodayIntoView);
+    if (inviteToken) connectFirebase();
+    else setLocalOnlyStatus();
   }
 
   function attachEvents() {
@@ -172,6 +193,7 @@
 
     if (channel) {
       channel.addEventListener("message", (event) => {
+        if (inviteToken) return;
         if (!event.data || event.data.clientId === clientId || event.data.boardId !== boardId) return;
         state = normalizeState(event.data.state);
         renderKeepScroll();
@@ -180,6 +202,7 @@
     }
 
     window.addEventListener("storage", (event) => {
+      if (inviteToken) return;
       if (event.key !== storageKey || !event.newValue) return;
       state = normalizeState(JSON.parse(event.newValue));
       renderKeepScroll();
@@ -219,16 +242,19 @@
 
   function normalizeState(nextState) {
     const safe = nextState || {};
-    const participants = Array.isArray(safe.participants) ? safe.participants : [];
+    const rawParticipants = Array.isArray(safe.participants)
+      ? safe.participants
+      : Object.entries(safe.participants || {}).map(([id, participant]) => ({ id, ...participant }));
     return {
       meta: {
         title: safe.meta && safe.meta.title ? safe.meta.title : DEFAULT_TITLE,
         timezone: "Asia/Seoul",
-        likelyThreshold: safe.meta && Number(safe.meta.likelyThreshold) ? Number(safe.meta.likelyThreshold) : DEFAULT_THRESHOLD,
+        likelyThreshold: safe.meta && Number.isFinite(Number(safe.meta.likelyThreshold)) ? Number(safe.meta.likelyThreshold) : DEFAULT_THRESHOLD,
         confirmationPermission: "all_members",
+        createdAt: safe.meta && safe.meta.createdAt ? safe.meta.createdAt : Date.now(),
         updatedAt: safe.meta && safe.meta.updatedAt ? safe.meta.updatedAt : Date.now()
       },
-      participants: participants
+      participants: rawParticipants
         .map((participant, index) => ({
           id: participant.id || createId("p"),
           name: typeof participant.name === "string" ? participant.name : "",
@@ -238,14 +264,35 @@
           updatedAt: participant.updatedAt || Date.now()
         }))
         .sort((a, b) => a.sortOrder - b.sortOrder),
-      availability: safe.availability || {},
+      availability: normalizeAvailability(safe.availability),
       confirmedDates: safe.confirmedDates || {}
     };
+  }
+
+  function normalizeAvailability(availability) {
+    const result = {};
+    Object.entries(availability || {}).forEach(([participantId, datesByParticipant]) => {
+      Object.entries(datesByParticipant || {}).forEach(([date, value]) => {
+        const status = typeof value === "string" ? value : value && value.status;
+        if (!STATUS_LABEL[status]) return;
+        if (!result[participantId]) result[participantId] = {};
+        result[participantId][date] = status;
+      });
+    });
+    return result;
   }
 
   function persist(message) {
     state.meta.updatedAt = Date.now();
     localStorage.setItem(storageKey, JSON.stringify(state));
+    if (firebaseReady) {
+      const updates = createFirebaseUpdates(syncedState || state, state);
+      if (Object.keys(updates).length) {
+        update(ref(firebaseDatabase), updates).catch((error) => handleFirebaseError(error, "저장하지 못했습니다."));
+      }
+      if (message) showToast(message);
+      return;
+    }
     if (channel) {
       channel.postMessage({ clientId, boardId, state });
     }
@@ -260,6 +307,113 @@
       els.status.className = "connection connected";
     }, 260);
     if (message) showToast(message);
+  }
+
+  async function connectFirebase() {
+    try {
+      setConnectionStatus("연결 중", "syncing");
+      const firebaseApp = initializeApp(FIREBASE_CONFIG);
+      const auth = getAuth(firebaseApp);
+      firebaseDatabase = getDatabase(firebaseApp);
+      const credential = await signInAnonymously(auth);
+      firebaseUser = credential.user;
+
+      const inviteSnapshot = await get(ref(firebaseDatabase, `boardInvites/${inviteToken}`));
+      const invite = inviteSnapshot.val();
+      if (!invite || invite.active !== true || invite.boardId !== boardId) {
+        throw new Error("invalid-invite");
+      }
+
+      await set(ref(firebaseDatabase, `boards/${boardId}/members/${firebaseUser.uid}`), {
+        role: "editor",
+        inviteToken,
+        joinedAt: serverTimestamp(),
+        lastSeenAt: serverTimestamp()
+      });
+
+      onValue(ref(firebaseDatabase, `boards/${boardId}`), (snapshot) => {
+        if (!snapshot.exists()) return;
+        state = normalizeState(snapshot.val());
+        syncedState = cloneState(state);
+        firebaseReady = true;
+        els.banner.hidden = true;
+        els.title.value = state.meta.title;
+        els.thresholdInput.value = Math.round(state.meta.likelyThreshold * 100);
+        updateThresholdLabel();
+        renderKeepScroll();
+        setConnectionStatus("실시간 연결됨", "connected");
+      }, (error) => handleFirebaseError(error, "보드를 읽지 못했습니다."));
+    } catch (error) {
+      handleFirebaseError(error, "Firebase 연결에 실패했습니다.");
+    }
+  }
+
+  function createFirebaseUpdates(previous, next) {
+    const updates = {};
+    const oldState = previous || normalizeState({});
+    if (!sameJson(oldState.meta, next.meta)) {
+      updates[`boards/${boardId}/meta`] = next.meta;
+    }
+
+    const oldParticipants = Object.fromEntries((oldState.participants || []).map((participant) => [participant.id, participant]));
+    const nextParticipants = Object.fromEntries((next.participants || []).map((participant) => [participant.id, participant]));
+    new Set([...Object.keys(oldParticipants), ...Object.keys(nextParticipants)]).forEach((participantId) => {
+      if (!sameJson(oldParticipants[participantId], nextParticipants[participantId])) {
+        updates[`boards/${boardId}/participants/${participantId}`] = nextParticipants[participantId] || null;
+      }
+    });
+
+    const participantIds = new Set([...Object.keys(oldState.availability || {}), ...Object.keys(next.availability || {})]);
+    participantIds.forEach((participantId) => {
+      const oldDates = oldState.availability[participantId] || {};
+      const nextDates = next.availability[participantId] || {};
+      new Set([...Object.keys(oldDates), ...Object.keys(nextDates)]).forEach((date) => {
+        if (oldDates[date] === nextDates[date]) return;
+        updates[`boards/${boardId}/availability/${participantId}/${date}`] = nextDates[date]
+          ? { status: nextDates[date], updatedAt: serverTimestamp(), updatedBy: firebaseUser.uid }
+          : null;
+      });
+    });
+
+    const confirmedDates = new Set([...Object.keys(oldState.confirmedDates || {}), ...Object.keys(next.confirmedDates || {})]);
+    confirmedDates.forEach((date) => {
+      if (!sameJson(oldState.confirmedDates[date], next.confirmedDates[date])) {
+        updates[`boards/${boardId}/confirmedDates/${date}`] = next.confirmedDates[date]
+          ? { ...next.confirmedDates[date], updatedAt: serverTimestamp(), updatedBy: firebaseUser.uid }
+          : null;
+      }
+    });
+    return updates;
+  }
+
+  function cloneState(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function sameJson(left, right) {
+    return JSON.stringify(left) === JSON.stringify(right);
+  }
+
+  function setConnectionStatus(label, mode) {
+    els.status.textContent = label;
+    els.status.className = `connection ${mode}`;
+  }
+
+  function setLocalOnlyStatus() {
+    els.banner.hidden = false;
+    els.banner.textContent = "이 보드는 이 기기 안에만 저장됩니다. Firebase 보드는 초대 링크로 열어야 합니다.";
+    setConnectionStatus("이 기기만", "syncing");
+  }
+
+  function handleFirebaseError(error, message) {
+    console.error("Firebase calendar error:", error);
+    firebaseReady = false;
+    els.banner.hidden = false;
+    els.banner.textContent = error && error.message === "invalid-invite"
+      ? "초대 링크가 올바르지 않거나 만료되었습니다."
+      : "Firebase 연결에 실패했습니다. 익명 로그인과 데이터베이스 규칙을 확인해 주세요.";
+    setConnectionStatus("연결 실패", "syncing");
+    showToast(message);
   }
 
   function renderKeepScroll() {
