@@ -7,8 +7,8 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
   const STORAGE_PREFIX = "dw-friends-calendar:";
   const CHANNEL_NAME = "dw-friends-calendar-sync";
-  const APP_VERSION = "20260803-6";
-  const ONBOARDING_VERSION = "2";
+  const APP_VERSION = "20260803-7";
+  const ONBOARDING_VERSION = "3";
   const DEFAULT_TITLE = "친구 약속 잡기";
   const DEFAULT_THRESHOLD = 0.8;
   const DEFAULT_PARTICIPANTS = 6;
@@ -944,7 +944,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     els.onboardingStep.textContent = isTapStep ? "1 / 2" : "2 / 2";
     els.onboardingTitle.textContent = isTapStep ? "날짜 칸을 눌러보세요" : "여러 날짜는 드래그로 바꿔요";
     els.onboardingDescription.textContent = isTapStep
-      ? "클릭할 때마다 빈칸, ○, ×, △ 순서로 상태가 바뀝니다."
+      ? "클릭할 때마다 ○, ×, △, 빈칸 순서로 상태가 바뀝니다."
       : "같은 상태로 바꾸고 싶은 날짜들을 드래그하면 한 번에 적용됩니다.";
     els.onboardingAction.textContent = isTapStep ? "다음" : "시작하기";
     els.tapTutorial.hidden = !isTapStep;

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>친구 일정 조율 캘린더</title>
-  <link rel="stylesheet" href="style.css?v=20260803-6" />
+  <link rel="stylesheet" href="style.css?v=20260803-7" />
 </head>
 <body>
   <div class="app-shell">
@@ -99,11 +99,15 @@
       <div class="onboarding-progress"><span id="onboardingStep">1 / 2</span></div>
       <div class="modal-kicker">처음 오셨군요</div>
       <h2 id="onboardingTitle">날짜 칸을 눌러보세요</h2>
-      <p id="onboardingDescription">클릭할 때마다 빈칸, ○, ×, △ 순서로 상태가 바뀝니다.</p>
+      <p id="onboardingDescription">클릭할 때마다 ○, ×, △, 빈칸 순서로 상태가 바뀝니다.</p>
 
       <div id="tapTutorial" class="tutorial-demo tutorial-tap" aria-hidden="true">
-        <span class="tutorial-demo-hint">한 번 누르기</span>
-        <div class="tutorial-cell tutorial-tap-cell"><span>○</span></div>
+        <span class="tutorial-demo-hint">클릭할 때마다</span>
+        <div class="tutorial-cell tutorial-tap-cell">
+          <span class="tutorial-tap-status tutorial-tap-yes">○</span>
+          <span class="tutorial-tap-status tutorial-tap-no">×</span>
+          <span class="tutorial-tap-status tutorial-tap-maybe">△</span>
+        </div>
         <span class="tutorial-finger tutorial-tap-finger">☝</span>
       </div>
 
@@ -124,6 +128,6 @@
   <div id="stampLayer" class="stamp-layer" aria-hidden="true"></div>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
-  <script type="module" src="app.js?v=20260803-6"></script>
+  <script type="module" src="app.js?v=20260803-7"></script>
 </body>
 </html>

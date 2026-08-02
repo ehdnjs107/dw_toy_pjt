@@ -488,10 +488,20 @@ button { cursor: pointer; }
 }
 
 .tutorial-demo-hint { position: absolute; top: 10px; left: 14px; color: var(--muted); font-size: 10px; font-weight: 800; }
-.tutorial-tap-cell { animation: tutorial-cell-response 4.8s ease-in-out infinite; }
-.tutorial-tap-cell span { opacity: 0; animation: tutorial-status-change 4.8s ease-in-out infinite; }
+.tutorial-tap-cell { animation: tutorial-cell-cycle 10.4s ease-in-out infinite; }
+.tutorial-tap-status {
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.78);
+  animation-duration: 10.4s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.tutorial-tap-yes { color: var(--green); animation-name: tutorial-status-yes; }
+.tutorial-tap-no { color: var(--red); animation-name: tutorial-status-no; }
+.tutorial-tap-maybe { color: var(--amber); animation-name: tutorial-status-maybe; }
 .tutorial-finger { position: absolute; z-index: 2; color: #f3f5f7; font-size: 28px; line-height: 1; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.42)); }
-.tutorial-tap-finger { top: 10px; left: calc(50% + 16px); animation: tutorial-tap 4.8s cubic-bezier(0.22, 0.7, 0.26, 1) infinite; }
+.tutorial-tap-finger { top: 10px; left: calc(50% + 16px); animation: tutorial-tap-cycle 10.4s cubic-bezier(0.22, 0.7, 0.26, 1) infinite; }
 
 .tutorial-drag-cells {
   position: absolute;
@@ -536,9 +546,32 @@ button { cursor: pointer; }
 .toast button { margin-left: 8px; border: 0; border-bottom: 1px solid var(--green); background: transparent; color: var(--green); font-weight: 900; }
 
 @keyframes pulse-check { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-@keyframes tutorial-tap { 0%, 16% { transform: translateY(0) scale(1); } 30%, 38% { transform: translateY(29px) scale(0.9); } 52%, 100% { transform: translateY(0) scale(1); } }
-@keyframes tutorial-cell-response { 0%, 27% { background: #162330; box-shadow: none; } 36%, 90% { background: #123b29; box-shadow: inset 0 0 0 2px rgba(98, 217, 151, 0.34); } 100% { background: #162330; box-shadow: none; } }
-@keyframes tutorial-status-change { 0%, 28% { opacity: 0; transform: scale(0.72); } 38%, 90% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.88); } }
+@keyframes tutorial-tap-cycle {
+  0%, 5%, 16%, 30%, 41%, 55%, 66%, 80%, 91%, 100% { transform: translateY(0) scale(1); }
+  9%, 12%, 34%, 37%, 59%, 62%, 84%, 87% { transform: translateY(29px) scale(0.9); }
+}
+@keyframes tutorial-cell-cycle {
+  0%, 10% { background: #162330; box-shadow: none; }
+  14%, 35% { background: #123b29; box-shadow: inset 0 0 0 2px rgba(98, 217, 151, 0.34); }
+  39%, 60% { background: #3b1b20; box-shadow: inset 0 0 0 2px rgba(255, 105, 113, 0.32); }
+  64%, 85% { background: #3a3018; box-shadow: inset 0 0 0 2px rgba(241, 195, 92, 0.32); }
+  89%, 100% { background: #162330; box-shadow: none; }
+}
+@keyframes tutorial-status-yes {
+  0%, 10% { opacity: 0; transform: scale(0.78); }
+  14%, 34% { opacity: 1; transform: scale(1); }
+  38%, 100% { opacity: 0; transform: scale(0.88); }
+}
+@keyframes tutorial-status-no {
+  0%, 35% { opacity: 0; transform: scale(0.78); }
+  39%, 59% { opacity: 1; transform: scale(1); }
+  63%, 100% { opacity: 0; transform: scale(0.88); }
+}
+@keyframes tutorial-status-maybe {
+  0%, 60% { opacity: 0; transform: scale(0.78); }
+  64%, 84% { opacity: 1; transform: scale(1); }
+  88%, 100% { opacity: 0; transform: scale(0.88); }
+}
 @keyframes tutorial-drag { 0%, 14% { transform: translate(0, 0) scale(1); } 24%, 30% { transform: translate(0, 28px) scale(0.9); } 72% { transform: translate(152px, 28px) scale(0.9); } 82%, 100% { transform: translate(152px, 0) scale(1); } }
 @keyframes tutorial-drag-fill-1 { 0%, 27% { opacity: 0.14; background: #162330; } 34%, 91% { opacity: 1; background: #123b29; } 100% { opacity: 0.14; background: #162330; } }
 @keyframes tutorial-drag-fill-2 { 0%, 36% { opacity: 0.14; background: #162330; } 43%, 91% { opacity: 1; background: #123b29; } 100% { opacity: 0.14; background: #162330; } }
