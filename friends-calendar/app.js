@@ -103,6 +103,8 @@
   let gesture = null;
   let toastTimer = null;
   let scrollTimer = null;
+  let namePersistTimer = null;
+  let summaryRefreshFrame = null;
   let pendingConfirmDate = null;
   let initialScrollDone = false;
 
@@ -131,7 +133,9 @@
     els.grid.addEventListener("pointerup", onPointerUp);
     els.grid.addEventListener("pointercancel", cancelGesture);
     els.grid.addEventListener("keydown", onGridKeyDown);
+    els.grid.addEventListener("input", onGridInput);
     els.grid.addEventListener("change", onGridChange);
+    els.grid.addEventListener("focusout", onGridFocusOut);
     els.grid.addEventListener("click", onGridClick);
 
     els.todayButton.addEventListener("click", () => {
@@ -351,13 +355,29 @@
       </div>`;
   }
 
+  function onGridInput(event) {
+    if (event.target.dataset.action !== "rename") return;
+    if (!commitParticipantName(event.target)) return;
+    scheduleSummaryRefresh();
+    window.clearTimeout(namePersistTimer);
+    namePersistTimer = window.setTimeout(() => {
+      persist();
+    }, 450);
+  }
+
   function onGridChange(event) {
     if (event.target.dataset.action !== "rename") return;
-    const participant = findParticipant(event.target.dataset.participant);
-    if (!participant) return;
-    participant.name = event.target.value.trim();
-    participant.updatedAt = Date.now();
+    commitParticipantName(event.target);
+    window.clearTimeout(namePersistTimer);
     persist("이름을 저장했습니다.");
+    renderKeepScroll();
+  }
+
+  function onGridFocusOut(event) {
+    if (event.target.dataset.action !== "rename") return;
+    commitParticipantName(event.target);
+    window.clearTimeout(namePersistTimer);
+    persist();
     renderKeepScroll();
   }
 
@@ -505,12 +525,12 @@
   }
 
   function calculateSummary(date) {
-    const named = getActiveParticipants().filter((participant) => participant.name.trim());
-    const total = named.length;
+    const counted = getCountedParticipants(date);
+    const total = counted.length;
     let yes = 0;
     let maybe = 0;
     let responses = 0;
-    named.forEach((participant) => {
+    counted.forEach((participant) => {
       const status = getStatus(participant.id, date);
       if (status) responses += 1;
       if (status === "yes") yes += 1;
@@ -536,13 +556,51 @@
     };
   }
 
+  function commitParticipantName(input) {
+    const participant = findParticipant(input.dataset.participant);
+    if (!participant) return false;
+    const nextName = input.value.trim();
+    if (participant.name === nextName) return false;
+    participant.name = nextName;
+    participant.updatedAt = Date.now();
+    return true;
+  }
+
+  function scheduleSummaryRefresh() {
+    if (summaryRefreshFrame) return;
+    summaryRefreshFrame = window.requestAnimationFrame(() => {
+      summaryRefreshFrame = null;
+      refreshSummaryDisplay();
+    });
+  }
+
+  function refreshSummaryDisplay() {
+    const summaries = new Map();
+    dates.forEach((date) => {
+      summaries.set(date.iso, calculateSummary(date.iso));
+      const current = els.grid.querySelector(`.summary-cell[data-date="${date.iso}"]`);
+      if (!current) return;
+      const template = document.createElement("template");
+      template.innerHTML = renderSummaryCell(date).trim();
+      current.replaceWith(template.content.firstElementChild);
+    });
+
+    els.grid.querySelectorAll(".schedule-cell").forEach((cell) => {
+      const summary = summaries.get(cell.dataset.date) || calculateSummary(cell.dataset.date);
+      const status = cell.dataset.status || null;
+      cell.classList.toggle("is-likely", summary.judgement === "유력");
+      cell.classList.toggle("is-confirmed", summary.isConfirmed);
+      cell.classList.toggle("needs-check", (summary.judgement === "유력" || summary.isConfirmed) && status === "maybe");
+    });
+  }
+
   function openSummaryDialog(date) {
     const summary = calculateSummary(date);
     pendingConfirmDate = date;
     const dateLabel = formatLongDate(date);
-    const maybeNames = getActiveParticipants()
-      .filter((participant) => participant.name.trim() && getStatus(participant.id, date) === "maybe")
-      .map((participant) => participant.name.trim());
+    const maybeNames = getCountedParticipants(date)
+      .filter((participant) => getStatus(participant.id, date) === "maybe")
+      .map((participant) => getParticipantLabel(participant));
 
     if (summary.isConfirmed) {
       els.cancelTitle.textContent = `${dateLabel} 약속 확정을 취소할까요?`;
@@ -756,6 +814,19 @@
 
   function getActiveParticipants() {
     return state.participants.filter((participant) => participant.isActive).sort((a, b) => a.sortOrder - b.sortOrder);
+  }
+
+  function getCountedParticipants(date) {
+    return getActiveParticipants().filter((participant) => {
+      return participant.name.trim() || getStatus(participant.id, date);
+    });
+  }
+
+  function getParticipantLabel(participant) {
+    const name = participant.name.trim();
+    if (name) return name;
+    const index = getActiveParticipants().findIndex((item) => item.id === participant.id);
+    return `친구 ${index + 1}`;
   }
 
   function findParticipant(id) {
