@@ -92,8 +92,8 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     banner: document.getElementById("statusBanner"),
     scroller: document.getElementById("calendarScroller"),
     grid: document.getElementById("calendarGrid"),
-    previousDatesButton: document.getElementById("previousDatesButton"),
-    nextDatesButton: document.getElementById("nextDatesButton"),
+    topDateDrag: document.getElementById("topDateDrag"),
+    bottomDateDrag: document.getElementById("bottomDateDrag"),
     todayButton: document.getElementById("todayButton"),
     shareButton: document.getElementById("shareButton"),
     settingsButton: document.getElementById("settingsButton"),
@@ -116,6 +116,8 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   let dates = createDateRange();
   let visibleDates = new Set();
   let gesture = null;
+  let dateDrag = null;
+  let suppressGridClick = false;
   let toastTimer = null;
   let namePersistTimer = null;
   let summaryRefreshFrame = null;
@@ -162,8 +164,12 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
       els.scroller.scrollTo({ left: getTodayScrollLeft(), behavior: "smooth" });
     });
 
-    els.previousDatesButton.addEventListener("click", () => moveDates(-1));
-    els.nextDatesButton.addEventListener("click", () => moveDates(1));
+    [els.topDateDrag, els.bottomDateDrag].forEach((dragBar) => {
+      dragBar.addEventListener("pointerdown", onDateDragDown);
+      dragBar.addEventListener("pointermove", onDateDragMove);
+      dragBar.addEventListener("pointerup", onDateDragEnd);
+      dragBar.addEventListener("pointercancel", onDateDragEnd);
+    });
 
     els.shareButton.addEventListener("click", copyShareLink);
     els.settingsButton.addEventListener("click", () => {
@@ -436,12 +442,8 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     dates.forEach((date) => html.push(renderDateHeader(date)));
 
     activeParticipants.forEach((participant) => {
-      html.push(renderDragRailLabel());
-      dates.forEach((date) => html.push(renderDragRail(participant, date)));
       html.push(renderParticipantLabel(participant));
       dates.forEach((date) => html.push(renderScheduleCell(participant, date)));
-      html.push(renderDragRailLabel());
-      dates.forEach((date) => html.push(renderDragRail(participant, date)));
     });
 
     html.push(`<div class="summary-label">집계</div>`);
@@ -477,15 +479,6 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
         <input class="name-input" data-action="rename" data-participant="${participant.id}" maxlength="12" value="${name}" placeholder="친구 이름" aria-label="참여자 이름" />
         <button class="row-menu" type="button" data-action="deactivate" data-participant="${participant.id}" aria-label="${name || "빈 행"} 삭제">×</button>
       </div>`;
-  }
-
-  function renderDragRailLabel() {
-    return `<div class="drag-rail-label" aria-hidden="true">↔</div>`;
-  }
-
-  function renderDragRail(participant, date) {
-    return `<div class="drag-rail" data-participant="${participant.id}" data-date="${date.iso}"
-      role="presentation" aria-label="${escapeHtml(participant.name || "친구")} ${escapeHtml(date.ariaLabel)} 날짜 조정 레일"></div>`;
   }
 
   function renderScheduleCell(participant, date) {
@@ -553,6 +546,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   function onGridClick(event) {
     const scheduleCell = event.target.closest(".schedule-cell");
     if (scheduleCell) {
+      if (suppressGridClick) return;
       cycleStatus(scheduleCell.dataset.participant, scheduleCell.dataset.date);
       return;
     }
@@ -569,33 +563,27 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   }
 
   function onPointerDown(event) {
-    const rail = event.target.closest(".drag-rail");
-    if (!rail || event.button > 0) return;
-    const status = getStatus(rail.dataset.participant, rail.dataset.date);
-    if (!status) {
-      showToast("먼저 위 칸을 눌러 ○, × 또는 △를 고른 뒤 드래그하세요.");
-      return;
-    }
-    event.preventDefault();
-    rail.setPointerCapture(event.pointerId);
+    const cell = event.target.closest(".schedule-cell");
+    if (!cell || event.button > 0) return;
+    cell.setPointerCapture(event.pointerId);
     gesture = {
       pointerId: event.pointerId,
-      participantId: rail.dataset.participant,
-      startDate: rail.dataset.date,
-      lastDate: rail.dataset.date,
-      status
+      participantId: cell.dataset.participant,
+      startDate: cell.dataset.date,
+      lastDate: cell.dataset.date,
+      status: getStatus(cell.dataset.participant, cell.dataset.date) || "yes",
+      moved: false
     };
-    if (navigator.vibrate) navigator.vibrate(10);
-    updatePaintPreview();
   }
 
   function onPointerMove(event) {
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     event.preventDefault();
     const target = document.elementFromPoint(event.clientX, event.clientY);
-    const rail = target && target.closest ? target.closest(".drag-rail") : null;
-    if (rail && rail.dataset.participant === gesture.participantId) {
-      gesture.lastDate = rail.dataset.date;
+    const cell = target && target.closest ? target.closest(".schedule-cell") : null;
+    if (cell && cell.dataset.participant === gesture.participantId) {
+      gesture.lastDate = cell.dataset.date;
+      gesture.moved = gesture.moved || gesture.startDate !== cell.dataset.date;
       updatePaintPreview();
     }
   }
@@ -603,8 +591,12 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   function onPointerUp(event) {
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     const current = gesture;
-    if (current.startDate !== current.lastDate) {
+    if (current.moved) {
       applyPaintRange(current.participantId, current.startDate, current.lastDate, current.status);
+      suppressGridClick = true;
+      window.setTimeout(() => {
+        suppressGridClick = false;
+      }, 120);
     }
     clearPaintPreview();
     gesture = null;
@@ -830,9 +822,26 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     els.grid.querySelectorAll(".paint-preview").forEach((cell) => cell.classList.remove("paint-preview"));
   }
 
-  function moveDates(direction) {
-    const distance = Math.max(getCellWidth() * 7, els.scroller.clientWidth - getNameWidth());
-    els.scroller.scrollBy({ left: direction * distance, behavior: "smooth" });
+  function onDateDragDown(event) {
+    if (event.button > 0) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dateDrag = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startScrollLeft: els.scroller.scrollLeft
+    };
+  }
+
+  function onDateDragMove(event) {
+    if (!dateDrag || dateDrag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    els.scroller.scrollLeft = dateDrag.startScrollLeft - (event.clientX - dateDrag.startX);
+  }
+
+  function onDateDragEnd(event) {
+    if (!dateDrag || dateDrag.pointerId !== event.pointerId) return;
+    dateDrag = null;
   }
 
   function onScroll() {

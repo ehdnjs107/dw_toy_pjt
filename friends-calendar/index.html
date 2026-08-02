@@ -25,17 +25,21 @@
     </section>
 
     <main class="calendar-shell" aria-label="친구 일정 조율표">
-      <section class="drag-guide" aria-label="날짜 조정 안내">
-        <button id="previousDatesButton" class="date-nav-button" type="button" aria-label="이전 날짜 보기">←</button>
+      <section id="topDateDrag" class="drag-guide" aria-label="날짜 조정 바">
         <div class="drag-guide-copy">
           <strong><span aria-hidden="true">↔</span> 드래그하여 날짜 조정 <span aria-hidden="true">↔</span></strong>
-          <span>표시된 칸의 위·아래 레일을 가로로 드래그하세요</span>
+          <span>이 바를 좌우로 드래그하세요</span>
         </div>
-        <button id="nextDatesButton" class="date-nav-button" type="button" aria-label="다음 날짜 보기">→</button>
       </section>
       <div id="calendarScroller" class="calendar-scroller">
         <div id="calendarGrid" class="calendar-grid"></div>
       </div>
+      <section id="bottomDateDrag" class="drag-guide drag-guide-bottom" aria-label="날짜 조정 바">
+        <div class="drag-guide-copy">
+          <strong><span aria-hidden="true">↔</span> 드래그하여 날짜 조정 <span aria-hidden="true">↔</span></strong>
+          <span>이 바를 좌우로 드래그하세요</span>
+        </div>
+      </section>
     </main>
 
     <button id="todayButton" class="today-button" type="button" hidden>오늘로</button>

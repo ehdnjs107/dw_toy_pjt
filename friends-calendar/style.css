@@ -107,8 +107,7 @@ button { cursor: pointer; }
 }
 
 .icon-button,
-.icon-text-button,
-.date-nav-button {
+.icon-text-button {
   display: grid;
   place-items: center;
   height: 38px;
@@ -122,8 +121,7 @@ button { cursor: pointer; }
 .icon-button { width: 38px; }
 .icon-text-button { padding: 0 11px; }
 .icon-button:hover,
-.icon-text-button:hover,
-.date-nav-button:hover { border-color: var(--blue); color: var(--blue); }
+.icon-text-button:hover { border-color: var(--blue); color: var(--blue); }
 
 .status-banner {
   padding: 8px 14px;
@@ -145,23 +143,18 @@ button { cursor: pointer; }
 .drag-guide {
   z-index: 35;
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) 42px;
+  grid-template-columns: minmax(0, 1fr);
   min-height: 58px;
   align-items: center;
-  gap: 10px;
   padding: 7px 12px;
   border-bottom: 1px solid var(--line-strong);
   background: #101318;
+  cursor: ew-resize;
+  touch-action: none;
+  user-select: none;
 }
 
-.date-nav-button {
-  width: 38px;
-  height: 38px;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 20px;
-  line-height: 1;
-}
+.drag-guide-bottom { border-top: 1px solid var(--line-strong); border-bottom: 0; }
 
 .drag-guide-copy {
   min-width: 0;
@@ -233,8 +226,7 @@ button { cursor: pointer; }
 
 .date-cell,
 .schedule-cell,
-.summary-cell,
-.drag-rail {
+.summary-cell {
   width: var(--cell);
   min-width: var(--cell);
   border-right: 1px solid var(--line);
@@ -309,59 +301,6 @@ button { cursor: pointer; }
 
 .row-menu:hover,
 .row-menu:focus { background: #29222a; color: var(--red); }
-
-.drag-rail-label {
-  position: sticky;
-  left: 0;
-  z-index: 25;
-  height: 18px;
-  display: grid;
-  place-items: center;
-  border-right: 1px solid var(--line-strong);
-  border-bottom: 1px solid #222731;
-  background: #101318;
-  color: #5d6877;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.drag-rail {
-  position: relative;
-  height: 18px;
-  overflow: hidden;
-  border-bottom: 1px solid #222731;
-  background: #101318;
-  cursor: ew-resize;
-  touch-action: none;
-}
-
-.drag-rail::before {
-  position: absolute;
-  top: 8px;
-  right: 0;
-  left: 0;
-  height: 1px;
-  background: #3c4451;
-  content: "";
-}
-
-.drag-rail::after {
-  position: absolute;
-  top: 5px;
-  left: calc(50% - 3px);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #687384;
-  content: "";
-}
-
-.drag-rail:hover,
-.drag-rail:active { background: #1a2d28; }
-.drag-rail:hover::before,
-.drag-rail:active::before { background: var(--green); }
-.drag-rail:hover::after,
-.drag-rail:active::after { background: var(--green); }
 
 .schedule-cell {
   position: relative;
@@ -523,8 +462,7 @@ button { cursor: pointer; }
 @media (max-width: 560px) {
   .connection { display: none; }
   .board-title { width: min(58vw, 300px); font-size: 17px; }
-  .drag-guide { grid-template-columns: 38px minmax(0, 1fr) 38px; padding-right: 8px; padding-left: 8px; }
-  .date-nav-button { width: 34px; height: 34px; }
+  .drag-guide { padding-right: 8px; padding-left: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
