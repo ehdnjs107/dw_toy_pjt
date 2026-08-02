@@ -16,8 +16,8 @@
   --blue: #75baff;
   --blue-soft: #182e46;
   --stamp: #ff625c;
-  --cell: 48px;
-  --name-col: 104px;
+  --cell: 42px;
+  --name-col: 88px;
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 }
 
@@ -137,6 +137,7 @@ button { cursor: pointer; }
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background: var(--panel);
 }
 
@@ -144,7 +145,7 @@ button { cursor: pointer; }
   z-index: 35;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  min-height: 58px;
+  min-height: 50px;
   align-items: center;
   padding: 7px 12px;
   border-bottom: 1px solid var(--line-strong);
@@ -154,7 +155,12 @@ button { cursor: pointer; }
   user-select: none;
 }
 
-.drag-guide-bottom { border-top: 1px solid var(--line-strong); border-bottom: 0; }
+.drag-guide-bottom {
+  min-height: clamp(120px, 22svh, 180px);
+  flex: 1 0 120px;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 0;
+}
 
 .drag-guide-copy {
   min-width: 0;
@@ -185,7 +191,8 @@ button { cursor: pointer; }
 .calendar-scroller {
   width: 100%;
   min-width: 0;
-  flex: 1;
+  max-height: 58svh;
+  flex: 0 1 auto;
   overflow: auto;
   overscroll-behavior: contain;
   background: var(--panel);
@@ -203,7 +210,7 @@ button { cursor: pointer; }
   top: 0;
   left: 0;
   z-index: 30;
-  height: 66px;
+  height: 56px;
   display: grid;
   align-content: center;
   justify-items: center;
@@ -212,7 +219,7 @@ button { cursor: pointer; }
   border-bottom: 1px solid var(--line-strong);
   background: #161a20;
   color: var(--ink);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
 }
 
@@ -236,8 +243,7 @@ button { cursor: pointer; }
   position: sticky;
   top: 0;
   z-index: 20;
-  height: 66px;
-  display: flex;
+  height: 56px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -249,9 +255,9 @@ button { cursor: pointer; }
   user-select: none;
 }
 
-.month-label { min-height: 12px; color: var(--blue); font-size: 10px; font-weight: 900; }
-.date-number { font-size: 15px; font-weight: 900; }
-.weekday { color: var(--muted); font-size: 11px; }
+.month-label { min-height: 10px; color: var(--blue); font-size: 9px; font-weight: 900; }
+.date-number { font-size: 13px; font-weight: 900; }
+.weekday { color: var(--muted); font-size: 10px; }
 .holiday { background: #261719; color: var(--red); }
 .holiday .weekday { color: var(--red); }
 .holiday-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--red); }
@@ -262,7 +268,7 @@ button { cursor: pointer; }
   position: sticky;
   left: 0;
   z-index: 25;
-  height: 52px;
+  height: 44px;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -279,7 +285,7 @@ button { cursor: pointer; }
   border-bottom: 1px solid transparent;
   background: transparent;
   color: var(--ink);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   outline: none;
   text-overflow: ellipsis;
@@ -289,8 +295,8 @@ button { cursor: pointer; }
 .name-input:focus { border-bottom-color: var(--green); }
 
 .row-menu {
-  width: 26px;
-  height: 30px;
+  width: 24px;
+  height: 26px;
   flex: 0 0 auto;
   border: 0;
   border-radius: 6px;
@@ -304,7 +310,7 @@ button { cursor: pointer; }
 
 .schedule-cell {
   position: relative;
-  height: 52px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -328,12 +334,12 @@ button { cursor: pointer; }
 .schedule-cell.is-confirmed { background: #2b1b1c; }
 
 .status-mark {
-  width: 33px;
-  height: 33px;
+  width: 28px;
+  height: 28px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
   line-height: 1;
 }
@@ -372,10 +378,10 @@ button { cursor: pointer; }
   font-weight: 900;
 }
 
-.summary-label { height: 58px; }
+.summary-label { height: 50px; }
 
 .summary-cell {
-  height: 58px;
+  height: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -388,18 +394,18 @@ button { cursor: pointer; }
   outline: none;
 }
 
-.summary-count { display: block; font-size: 13px; font-weight: 900; }
-.summary-judgement { display: block; color: var(--muted); font-size: 10px; font-weight: 800; }
+.summary-count { display: block; font-size: 12px; font-weight: 900; }
+.summary-judgement { display: block; color: var(--muted); font-size: 9px; font-weight: 800; }
 .summary-cell.likely { box-shadow: inset 0 0 0 2px #39805b; background: #163222; }
 .summary-cell.likely .summary-judgement { color: var(--green); }
 .summary-cell.confirmed { box-shadow: inset 0 0 0 2px #99504d; background: #3a2020; }
 .summary-cell.confirmed .summary-judgement { color: var(--red); }
-.maybe-count { color: var(--amber); font-size: 10px; font-weight: 900; }
+.maybe-count { color: var(--amber); font-size: 9px; font-weight: 900; }
 
-.add-row-label { height: 48px; padding: 0 8px; }
+.add-row-label { height: 41px; padding: 0 8px; }
 .add-row {
   width: 100%;
-  height: 34px;
+  height: 30px;
   border: 1px solid var(--line-strong);
   border-radius: 6px;
   background: var(--panel-raised);
@@ -407,7 +413,7 @@ button { cursor: pointer; }
   font-size: 12px;
   font-weight: 900;
 }
-.blank-fill { height: 48px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #12161b; }
+.blank-fill { height: 41px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #12161b; }
 
 .today-button {
   position: fixed;
@@ -453,10 +459,10 @@ button { cursor: pointer; }
 @keyframes confetti-fall { 0% { opacity: 1; transform: translateY(0) rotate(0deg); } 100% { opacity: 0; transform: translateY(140px) rotate(260deg); } }
 
 @media (min-width: 720px) {
-  :root { --cell: 52px; --name-col: 132px; }
+  :root { --cell: 44px; --name-col: 112px; }
   .topbar { padding-right: 22px; padding-left: 22px; }
   .row-label,
-  .schedule-cell { height: 56px; }
+  .schedule-cell { height: 48px; }
 }
 
 @media (max-width: 560px) {
