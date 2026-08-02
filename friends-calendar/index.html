@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>친구 일정 조율 캘린더</title>
-  <link rel="stylesheet" href="style.css?v=20260803-4" />
+  <link rel="stylesheet" href="style.css?v=20260803-5" />
 </head>
 <body>
   <div class="app-shell">
@@ -102,11 +102,13 @@
       <p id="onboardingDescription">클릭할 때마다 빈칸, ○, ×, △ 순서로 상태가 바뀝니다.</p>
 
       <div id="tapTutorial" class="tutorial-demo tutorial-tap" aria-hidden="true">
+        <span class="tutorial-demo-hint">한 번 누르기</span>
         <div class="tutorial-cell tutorial-tap-cell"><span>○</span></div>
         <span class="tutorial-finger tutorial-tap-finger">☝</span>
       </div>
 
       <div id="dragTutorial" class="tutorial-demo tutorial-drag" aria-hidden="true" hidden>
+        <span class="tutorial-demo-hint">누른 채로 옆으로 이동</span>
         <div class="tutorial-drag-cells">
           <span>○</span><span>○</span><span>○</span><span>○</span><span>○</span>
         </div>
@@ -122,6 +124,6 @@
   <div id="stampLayer" class="stamp-layer" aria-hidden="true"></div>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
-  <script type="module" src="app.js?v=20260803-4"></script>
+  <script type="module" src="app.js?v=20260803-5"></script>
 </body>
 </html>

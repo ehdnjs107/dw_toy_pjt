@@ -487,9 +487,11 @@ button { cursor: pointer; }
   font-weight: 900;
 }
 
-.tutorial-tap-cell span { opacity: 0; animation: tutorial-status-change 2.4s ease-in-out infinite; }
+.tutorial-demo-hint { position: absolute; top: 10px; left: 14px; color: var(--muted); font-size: 10px; font-weight: 800; }
+.tutorial-tap-cell { animation: tutorial-cell-response 4.8s ease-in-out infinite; }
+.tutorial-tap-cell span { opacity: 0; animation: tutorial-status-change 4.8s ease-in-out infinite; }
 .tutorial-finger { position: absolute; z-index: 2; color: #f3f5f7; font-size: 28px; line-height: 1; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.42)); }
-.tutorial-tap-finger { top: 10px; left: calc(50% + 16px); animation: tutorial-tap 2.4s ease-in-out infinite; }
+.tutorial-tap-finger { top: 10px; left: calc(50% + 16px); animation: tutorial-tap 4.8s cubic-bezier(0.22, 0.7, 0.26, 1) infinite; }
 
 .tutorial-drag-cells {
   position: absolute;
@@ -513,15 +515,18 @@ button { cursor: pointer; }
   font-size: 19px;
   font-weight: 900;
   opacity: 0.14;
-  animation: tutorial-drag-fill 2.8s ease-in-out infinite;
+  animation-duration: 6.4s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }
 
 .tutorial-drag-cells span:first-child { border-left: 1px solid #39526a; }
-.tutorial-drag-cells span:nth-child(2) { animation-delay: 0.16s; }
-.tutorial-drag-cells span:nth-child(3) { animation-delay: 0.32s; }
-.tutorial-drag-cells span:nth-child(4) { animation-delay: 0.48s; }
-.tutorial-drag-cells span:nth-child(5) { animation-delay: 0.64s; }
-.tutorial-drag-finger { top: 18px; left: calc(50% - 106px); animation: tutorial-drag 2.8s cubic-bezier(0.25, 0.75, 0.3, 1) infinite; }
+.tutorial-drag-cells span:nth-child(1) { animation-name: tutorial-drag-fill-1; }
+.tutorial-drag-cells span:nth-child(2) { animation-name: tutorial-drag-fill-2; }
+.tutorial-drag-cells span:nth-child(3) { animation-name: tutorial-drag-fill-3; }
+.tutorial-drag-cells span:nth-child(4) { animation-name: tutorial-drag-fill-4; }
+.tutorial-drag-cells span:nth-child(5) { animation-name: tutorial-drag-fill-5; }
+.tutorial-drag-finger { top: 18px; left: calc(50% - 106px); animation: tutorial-drag 6.4s cubic-bezier(0.22, 0.7, 0.26, 1) infinite; }
 
 .stamp-layer { position: fixed; inset: 0; z-index: 80; overflow: hidden; pointer-events: none; }
 .stamp { position: absolute; display: grid; place-items: center; width: 118px; height: 84px; border: 5px solid var(--stamp); border-radius: 12px; color: var(--stamp); font-size: 29px; font-weight: 950; transform: translate(-50%, -50%) rotate(-8deg) scale(0.7); opacity: 0; animation: stamp-in 1.15s cubic-bezier(.19, 1, .22, 1) forwards; }
@@ -531,10 +536,15 @@ button { cursor: pointer; }
 .toast button { margin-left: 8px; border: 0; border-bottom: 1px solid var(--green); background: transparent; color: var(--green); font-weight: 900; }
 
 @keyframes pulse-check { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-@keyframes tutorial-tap { 0%, 28%, 100% { transform: translateY(0) scale(1); } 42% { transform: translateY(29px) scale(0.86); } 54% { transform: translateY(0) scale(1); } }
-@keyframes tutorial-status-change { 0%, 36% { opacity: 0; transform: scale(0.5); } 47%, 79% { opacity: 1; transform: scale(1.08); } 88%, 100% { opacity: 0; transform: scale(0.8); } }
-@keyframes tutorial-drag { 0%, 14% { transform: translate(0, 0) scale(1); } 24% { transform: translate(0, 28px) scale(0.86); } 38% { transform: translate(0, 28px) scale(0.86); } 70% { transform: translate(152px, 28px) scale(0.86); } 82%, 100% { transform: translate(152px, 0) scale(1); } }
-@keyframes tutorial-drag-fill { 0%, 30% { opacity: 0.14; background: #162330; } 43%, 78% { opacity: 1; background: #123b29; } 90%, 100% { opacity: 0.14; background: #162330; } }
+@keyframes tutorial-tap { 0%, 16% { transform: translateY(0) scale(1); } 30%, 38% { transform: translateY(29px) scale(0.9); } 52%, 100% { transform: translateY(0) scale(1); } }
+@keyframes tutorial-cell-response { 0%, 27% { background: #162330; box-shadow: none; } 36%, 90% { background: #123b29; box-shadow: inset 0 0 0 2px rgba(98, 217, 151, 0.34); } 100% { background: #162330; box-shadow: none; } }
+@keyframes tutorial-status-change { 0%, 28% { opacity: 0; transform: scale(0.72); } 38%, 90% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.88); } }
+@keyframes tutorial-drag { 0%, 14% { transform: translate(0, 0) scale(1); } 24%, 30% { transform: translate(0, 28px) scale(0.9); } 72% { transform: translate(152px, 28px) scale(0.9); } 82%, 100% { transform: translate(152px, 0) scale(1); } }
+@keyframes tutorial-drag-fill-1 { 0%, 27% { opacity: 0.14; background: #162330; } 34%, 91% { opacity: 1; background: #123b29; } 100% { opacity: 0.14; background: #162330; } }
+@keyframes tutorial-drag-fill-2 { 0%, 36% { opacity: 0.14; background: #162330; } 43%, 91% { opacity: 1; background: #123b29; } 100% { opacity: 0.14; background: #162330; } }
+@keyframes tutorial-drag-fill-3 { 0%, 45% { opacity: 0.14; background: #162330; } 52%, 91% { opacity: 1; background: #123b29; } 100% { opacity: 0.14; background: #162330; } }
+@keyframes tutorial-drag-fill-4 { 0%, 54% { opacity: 0.14; background: #162330; } 61%, 91% { opacity: 1; background: #123b29; } 100% { opacity: 0.14; background: #162330; } }
+@keyframes tutorial-drag-fill-5 { 0%, 63% { opacity: 0.14; background: #162330; } 70%, 91% { opacity: 1; background: #123b29; } 100% { opacity: 0.14; background: #162330; } }
 @keyframes stamp-in { 0% { opacity: 0; transform: translate(-50%, -50%) rotate(-18deg) scale(0.65); } 40% { opacity: 1; transform: translate(-50%, -50%) rotate(-8deg) scale(1.14); } 100% { opacity: 1; transform: translate(-50%, -50%) rotate(-8deg) scale(1); } }
 @keyframes confetti-fall { 0% { opacity: 1; transform: translateY(0) rotate(0deg); } 100% { opacity: 0; transform: translateY(140px) rotate(260deg); } }
 

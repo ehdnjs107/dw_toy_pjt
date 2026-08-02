@@ -7,7 +7,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
   const STORAGE_PREFIX = "dw-friends-calendar:";
   const CHANNEL_NAME = "dw-friends-calendar-sync";
-  const APP_VERSION = "20260803-4";
+  const APP_VERSION = "20260803-5";
   const ONBOARDING_VERSION = "1";
   const DEFAULT_TITLE = "친구 약속 잡기";
   const DEFAULT_THRESHOLD = 0.8;
