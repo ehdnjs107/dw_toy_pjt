@@ -11,6 +11,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   const DEFAULT_THRESHOLD = 0.8;
   const DEFAULT_PARTICIPANTS = 6;
   const MAX_PARTICIPANTS = 12;
+  const TODAY_BUTTON_RANGE_DAYS = 10;
   const RANGE_LIMIT_DAYS = 180;
   const DATE_PAST_DAYS = 365;
   const DATE_FUTURE_DAYS = 730;
@@ -449,7 +450,9 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     els.grid.style.gridTemplateColumns = `var(--name-col) repeat(${dates.length}, var(--cell))`;
 
     const html = [];
-    html.push(`<div class="name-corner"><span>${escapeHtml(getVisibleMonthLabel())}</span></div>`);
+    html.push(`<div class="month-corner" aria-hidden="true"></div>`);
+    html.push(...renderMonthHeaders());
+    html.push(`<div class="name-corner">이름</div>`);
     dates.forEach((date) => html.push(renderDateHeader(date)));
 
     activeParticipants.forEach((participant) => {
@@ -464,16 +467,31 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     updateTodayButton();
   }
 
+  function renderMonthHeaders() {
+    const months = [];
+    dates.forEach((date) => {
+      const key = `${date.year}-${date.month}`;
+      const lastMonth = months[months.length - 1];
+      if (!lastMonth || lastMonth.key !== key) {
+        months.push({ key, year: date.year, month: date.month, days: 1 });
+      } else {
+        lastMonth.days += 1;
+      }
+    });
+    return months.map((month) => `
+      <div class="month-cell" style="grid-column: span ${month.days}" role="columnheader">
+        ${month.year}년 ${month.month}월
+      </div>`);
+  }
+
   function renderDateHeader(date) {
     const classes = ["date-cell"];
     if (date.isToday) classes.push("today");
     if (date.isHoliday) classes.push("holiday");
     if (date.day === 1) classes.push("month-start");
-    const monthLabel = date.day === 1 || date.isToday ? `${date.month}월` : "";
     const holidayLabel = date.holidayName ? `<span class="holiday-dot" title="${escapeHtml(date.holidayName)}"></span>` : "";
     return `
       <div class="${classes.join(" ")}" data-date="${date.iso}" role="columnheader" aria-label="${escapeHtml(date.ariaLabel)}">
-        <span class="month-label">${monthLabel}</span>
         <span class="date-number">${date.day}</span>
         <span class="weekday">${date.weekday}</span>
         ${holidayLabel}
@@ -484,7 +502,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     const name = escapeHtml(participant.name);
     return `
       <div class="row-label" data-participant="${participant.id}">
-        <input class="name-input" data-action="rename" data-participant="${participant.id}" maxlength="12" value="${name}" placeholder="친구 이름" aria-label="참여자 이름" />
+        <input class="name-input" data-action="rename" data-participant="${participant.id}" maxlength="12" value="${name}" placeholder="이름" aria-label="참여자 이름" />
       </div>`;
   }
 
@@ -853,7 +871,6 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
   function onScroll() {
     updateTodayButton();
-    updateVisibleMonth();
   }
 
   function updateTodayButton() {
@@ -861,27 +878,13 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     if (todayIndex < 0) return;
     const cellWidth = getCellWidth();
     const centerIndex = Math.round((els.scroller.scrollLeft + (els.scroller.clientWidth / 2)) / cellWidth);
-    els.todayButton.hidden = Math.abs(centerIndex - todayIndex) <= 60;
-  }
-
-  function getVisibleMonthLabel() {
-    if (!els.scroller) return `${new Date().getMonth() + 1}월`;
-    const cellWidth = getCellWidth();
-    const nameWidth = getNameWidth();
-    const index = Math.max(0, Math.min(dates.length - 1, Math.floor((els.scroller.scrollLeft + nameWidth + 8) / cellWidth)));
-    return `${dates[index].year}년 ${dates[index].month}월`;
-  }
-
-  function updateVisibleMonth() {
-    const corner = els.grid.querySelector(".name-corner span");
-    if (corner) corner.textContent = getVisibleMonthLabel();
+    els.todayButton.hidden = Math.abs(centerIndex - todayIndex) <= TODAY_BUTTON_RANGE_DAYS;
   }
 
   function scrollTodayIntoView() {
     if (initialScrollDone) return;
     initialScrollDone = true;
     els.scroller.scrollLeft = getTodayScrollLeft();
-    updateVisibleMonth();
     updateTodayButton();
   }
 

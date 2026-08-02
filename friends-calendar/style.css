@@ -17,6 +17,7 @@
   --blue-soft: #182e46;
   --stamp: #ff625c;
   --cell: 42px;
+  --month-row: 26px;
   --name-col: 88px;
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 }
@@ -54,14 +55,6 @@ button { cursor: pointer; }
   padding: max(12px, env(safe-area-inset-top)) 14px 11px;
   border-bottom: 1px solid var(--line);
   background: #0d0f13;
-}
-
-.board-label {
-  display: block;
-  margin-bottom: 3px;
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 800;
 }
 
 .board-title {
@@ -197,7 +190,7 @@ button { cursor: pointer; }
 
 .name-corner {
   position: sticky;
-  top: 0;
+  top: var(--month-row);
   left: 0;
   z-index: 30;
   height: var(--cell);
@@ -212,6 +205,32 @@ button { cursor: pointer; }
   font-weight: 900;
 }
 
+.month-corner,
+.month-cell {
+  position: sticky;
+  top: 0;
+  z-index: 31;
+  height: var(--month-row);
+  border-right: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  background: #1a2029;
+}
+
+.month-corner {
+  left: 0;
+  z-index: 32;
+}
+
+.month-cell {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 .date-cell,
 .schedule-cell,
 .summary-cell {
@@ -222,13 +241,13 @@ button { cursor: pointer; }
 
 .date-cell {
   position: sticky;
-  top: 0;
+  top: var(--month-row);
   z-index: 20;
   height: var(--cell);
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1px;
   border-bottom: 1px solid var(--line-strong);
   background: #14181e;
   color: var(--ink);
@@ -236,7 +255,6 @@ button { cursor: pointer; }
   user-select: none;
 }
 
-.month-label { min-height: 10px; color: var(--blue); font-size: 9px; font-weight: 900; }
 .date-number { font-size: 13px; font-weight: 900; }
 .weekday { color: var(--muted); font-size: 10px; }
 .holiday { background: #261719; color: var(--red); }
