@@ -28,7 +28,6 @@
       <section id="topDateDrag" class="drag-guide" aria-label="날짜 조정 바">
         <div class="drag-guide-copy">
           <strong><span aria-hidden="true">↔</span> 드래그하여 날짜 조정 <span aria-hidden="true">↔</span></strong>
-          <span>이 바를 좌우로 드래그하세요</span>
         </div>
       </section>
       <div id="calendarScroller" class="calendar-scroller">
@@ -37,7 +36,6 @@
       <section id="bottomDateDrag" class="drag-guide drag-guide-bottom" aria-label="날짜 조정 바">
         <div class="drag-guide-copy">
           <strong><span aria-hidden="true">↔</span> 드래그하여 날짜 조정 <span aria-hidden="true">↔</span></strong>
-          <span>이 바를 좌우로 드래그하세요</span>
         </div>
       </section>
     </main>
@@ -74,7 +72,12 @@
     <form method="dialog" class="modal-panel">
       <div class="modal-kicker">설정</div>
       <h2>참여자 관리</h2>
-      <p>기본 6명에서 시작하며 최대 12명까지 추가할 수 있습니다. 이름이 비어 있는 행은 집계에서 제외됩니다.</p>
+      <p>참여 인원은 2명부터 12명까지 조절할 수 있습니다. 이름이 비어 있는 행은 집계에서 제외됩니다.</p>
+      <label class="participant-count-control">
+        <span>참여 인원</span>
+        <input id="participantCountInput" type="range" min="2" max="12" step="1" />
+        <strong id="participantCountLabel">6명</strong>
+      </label>
       <label class="threshold-control">
         <span>유력 기준</span>
         <input id="thresholdInput" type="range" min="50" max="100" step="5" />

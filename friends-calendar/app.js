@@ -106,6 +106,8 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     cancelTitle: document.getElementById("cancelTitle"),
     cancelAction: document.getElementById("cancelAction"),
     settingsDialog: document.getElementById("settingsDialog"),
+    participantCountInput: document.getElementById("participantCountInput"),
+    participantCountLabel: document.getElementById("participantCountLabel"),
     thresholdInput: document.getElementById("thresholdInput"),
     thresholdLabel: document.getElementById("thresholdLabel"),
     stampLayer: document.getElementById("stampLayer"),
@@ -133,7 +135,9 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   function init() {
     els.banner.hidden = Boolean(inviteToken);
     els.title.value = state.meta.title;
+    els.participantCountInput.value = getActiveParticipants().length;
     els.thresholdInput.value = Math.round(state.meta.likelyThreshold * 100);
+    updateParticipantCountLabel();
     updateThresholdLabel();
     render();
     attachEvents();
@@ -173,7 +177,14 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
     els.shareButton.addEventListener("click", copyShareLink);
     els.settingsButton.addEventListener("click", () => {
+      els.participantCountInput.value = getActiveParticipants().length;
+      updateParticipantCountLabel();
       showDialog(els.settingsDialog);
+    });
+
+    els.participantCountInput.addEventListener("input", updateParticipantCountLabel);
+    els.participantCountInput.addEventListener("change", () => {
+      setParticipantCount(Number(els.participantCountInput.value));
     });
 
     els.thresholdInput.addEventListener("input", () => {
@@ -438,7 +449,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     els.grid.style.gridTemplateColumns = `var(--name-col) repeat(${dates.length}, var(--cell))`;
 
     const html = [];
-    html.push(`<div class="name-corner"><span>${escapeHtml(getVisibleMonthLabel())}</span><small>칸 클릭마다<br />표시 변경</small></div>`);
+    html.push(`<div class="name-corner"><span>${escapeHtml(getVisibleMonthLabel())}</span></div>`);
     dates.forEach((date) => html.push(renderDateHeader(date)));
 
     activeParticipants.forEach((participant) => {
@@ -448,9 +459,6 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
     html.push(`<div class="summary-label">집계</div>`);
     dates.forEach((date) => html.push(renderSummaryCell(date)));
-
-    html.push(`<div class="add-row-label"><button class="add-row" type="button" data-action="add-row">행 추가</button></div>`);
-    dates.forEach(() => html.push(`<div class="blank-fill" aria-hidden="true"></div>`));
 
     els.grid.innerHTML = html.join("");
     updateTodayButton();
@@ -477,7 +485,6 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     return `
       <div class="row-label" data-participant="${participant.id}">
         <input class="name-input" data-action="rename" data-participant="${participant.id}" maxlength="12" value="${name}" placeholder="친구 이름" aria-label="참여자 이름" />
-        <button class="row-menu" type="button" data-action="deactivate" data-participant="${participant.id}" aria-label="${name || "빈 행"} 삭제">×</button>
       </div>`;
   }
 
@@ -553,11 +560,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     const actionEl = event.target.closest("[data-action]");
     if (!actionEl) return;
     const action = actionEl.dataset.action;
-    if (action === "add-row") {
-      addParticipant();
-    } else if (action === "deactivate") {
-      deactivateParticipant(actionEl.dataset.participant);
-    } else if (action === "summary") {
+    if (action === "summary") {
       openSummaryDialog(actionEl.dataset.date);
     }
   }
@@ -773,40 +776,44 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     }
   }
 
-  function addParticipant() {
-    const activeCount = getActiveParticipants().length;
-    if (activeCount >= MAX_PARTICIPANTS) {
-      showToast("최대 12명까지 추가할 수 있습니다.");
-      return;
-    }
-    const nextOrder = Math.max(-1, ...state.participants.map((item) => item.sortOrder)) + 1;
-    state.participants.push({
-      id: createId("p"),
-      name: "",
-      sortOrder: nextOrder,
-      isActive: true,
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    });
-    persist("참여자 행을 추가했습니다.");
-    renderKeepScroll();
-  }
+  function setParticipantCount(requestedCount) {
+    const targetCount = Math.max(2, Math.min(MAX_PARTICIPANTS, requestedCount));
+    const activeParticipants = getActiveParticipants();
+    const now = Date.now();
 
-  function deactivateParticipant(participantId) {
-    const participant = findParticipant(participantId);
-    if (!participant) return;
-    const label = participant.name || "빈 행";
-    if (!window.confirm(`'${label}' 행을 목록에서 제거할까요?\n기존 일정은 보존되며 나중에 복구할 수 있습니다.`)) return;
-    participant.isActive = false;
-    participant.updatedAt = Date.now();
-    persist();
+    if (activeParticipants.length > targetCount) {
+      activeParticipants.slice(targetCount).forEach((participant) => {
+        participant.isActive = false;
+        participant.updatedAt = now;
+      });
+    } else if (activeParticipants.length < targetCount) {
+      const inactiveParticipants = state.participants
+        .filter((participant) => !participant.isActive)
+        .sort((left, right) => left.sortOrder - right.sortOrder);
+      const needed = targetCount - activeParticipants.length;
+      inactiveParticipants.slice(0, needed).forEach((participant) => {
+        participant.isActive = true;
+        participant.updatedAt = now;
+      });
+
+      const remaining = targetCount - getActiveParticipants().length;
+      const nextOrder = Math.max(-1, ...state.participants.map((participant) => participant.sortOrder)) + 1;
+      for (let index = 0; index < remaining; index += 1) {
+        state.participants.push({
+          id: createId("p"),
+          name: "",
+          sortOrder: nextOrder + index,
+          isActive: true,
+          createdAt: now,
+          updatedAt: now
+        });
+      }
+    }
+
+    els.participantCountInput.value = targetCount;
+    updateParticipantCountLabel();
+    persist(`참여 인원을 ${targetCount}명으로 설정했습니다.`);
     renderKeepScroll();
-    showUndoToast(`${label} 행을 제거했습니다.`, () => {
-      participant.isActive = true;
-      participant.updatedAt = Date.now();
-      persist("행을 복구했습니다.");
-      renderKeepScroll();
-    });
   }
 
   function updatePaintPreview() {
@@ -984,6 +991,10 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     els.thresholdLabel.textContent = `${els.thresholdInput.value}%`;
   }
 
+  function updateParticipantCountLabel() {
+    els.participantCountLabel.textContent = `${els.participantCountInput.value}명`;
+  }
+
   function showDialog(dialog) {
     if (typeof dialog.showModal === "function") {
       dialog.showModal();
@@ -1035,20 +1046,6 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     toastTimer = window.setTimeout(() => {
       els.toast.hidden = true;
     }, 1800);
-  }
-
-  function showUndoToast(message, onUndo) {
-    window.clearTimeout(toastTimer);
-    els.toast.innerHTML = `${escapeHtml(message)} <button type="button">실행 취소</button>`;
-    els.toast.hidden = false;
-    const button = els.toast.querySelector("button");
-    button.addEventListener("click", () => {
-      els.toast.hidden = true;
-      onUndo();
-    }, { once: true });
-    toastTimer = window.setTimeout(() => {
-      els.toast.hidden = true;
-    }, 4200);
   }
 
   function escapeHtml(value) {

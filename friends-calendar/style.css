@@ -178,16 +178,6 @@ button { cursor: pointer; }
 
 .drag-guide-copy strong span { color: var(--green); }
 
-.drag-guide-copy > span {
-  overflow: hidden;
-  max-width: 100%;
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 700;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .calendar-scroller {
   width: 100%;
   min-width: 0;
@@ -210,25 +200,16 @@ button { cursor: pointer; }
   top: 0;
   left: 0;
   z-index: 30;
-  height: 56px;
+  height: var(--cell);
   display: grid;
   align-content: center;
   justify-items: center;
-  gap: 4px;
   border-right: 1px solid var(--line-strong);
   border-bottom: 1px solid var(--line-strong);
   background: #161a20;
   color: var(--ink);
   font-size: 11px;
   font-weight: 900;
-}
-
-.name-corner small {
-  color: var(--muted);
-  font-size: 8px;
-  font-weight: 750;
-  line-height: 1.25;
-  text-align: center;
 }
 
 .date-cell,
@@ -243,7 +224,7 @@ button { cursor: pointer; }
   position: sticky;
   top: 0;
   z-index: 20;
-  height: 56px;
+  height: var(--cell);
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -293,20 +274,6 @@ button { cursor: pointer; }
 
 .name-input:placeholder-shown { color: #707988; }
 .name-input:focus { border-bottom-color: var(--green); }
-
-.row-menu {
-  width: 24px;
-  height: 26px;
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--muted);
-  font-weight: 900;
-}
-
-.row-menu:hover,
-.row-menu:focus { background: #29222a; color: var(--red); }
 
 .schedule-cell {
   position: relative;
@@ -362,8 +329,7 @@ button { cursor: pointer; }
   pointer-events: none;
 }
 
-.summary-label,
-.add-row-label {
+.summary-label {
   position: sticky;
   left: 0;
   z-index: 25;
@@ -402,19 +368,6 @@ button { cursor: pointer; }
 .summary-cell.confirmed .summary-judgement { color: var(--red); }
 .maybe-count { color: var(--amber); font-size: 9px; font-weight: 900; }
 
-.add-row-label { height: 41px; padding: 0 8px; }
-.add-row {
-  width: 100%;
-  height: 30px;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  background: var(--panel-raised);
-  color: var(--green);
-  font-size: 12px;
-  font-weight: 900;
-}
-.blank-fill { height: 41px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #12161b; }
-
 .today-button {
   position: fixed;
   right: max(14px, env(safe-area-inset-right));
@@ -445,6 +398,7 @@ button { cursor: pointer; }
 .primary-button { border: 0; background: var(--green); color: #0a120d; }
 .secondary-button { border: 1px solid var(--line-strong); background: var(--panel-raised); color: var(--ink); }
 .danger-button { border: 0; background: var(--stamp); color: #250808; }
+.participant-count-control,
 .threshold-control { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; margin-top: 18px; color: var(--ink); font-size: 14px; font-weight: 800; }
 
 .stamp-layer { position: fixed; inset: 0; z-index: 80; overflow: hidden; pointer-events: none; }
