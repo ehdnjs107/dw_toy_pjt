@@ -7,7 +7,8 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
   const STORAGE_PREFIX = "dw-friends-calendar:";
   const CHANNEL_NAME = "dw-friends-calendar-sync";
-  const APP_VERSION = "20260803-3";
+  const APP_VERSION = "20260803-4";
+  const ONBOARDING_VERSION = "1";
   const DEFAULT_TITLE = "친구 약속 잡기";
   const DEFAULT_THRESHOLD = 0.8;
   const DEFAULT_PARTICIPANTS = 6;
@@ -109,6 +110,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   const boardId = params.get("board") || "default";
   const inviteToken = params.get("invite");
   const storageKey = STORAGE_PREFIX + boardId;
+  const onboardingKey = `${STORAGE_PREFIX}onboarding:${boardId}:${ONBOARDING_VERSION}`;
   const channel = "BroadcastChannel" in window ? new BroadcastChannel(CHANNEL_NAME) : null;
 
   const els = {
@@ -131,6 +133,13 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     cancelTitle: document.getElementById("cancelTitle"),
     cancelAction: document.getElementById("cancelAction"),
     settingsDialog: document.getElementById("settingsDialog"),
+    onboardingDialog: document.getElementById("onboardingDialog"),
+    onboardingStep: document.getElementById("onboardingStep"),
+    onboardingTitle: document.getElementById("onboardingTitle"),
+    onboardingDescription: document.getElementById("onboardingDescription"),
+    onboardingAction: document.getElementById("onboardingAction"),
+    tapTutorial: document.getElementById("tapTutorial"),
+    dragTutorial: document.getElementById("dragTutorial"),
     participantCountInput: document.getElementById("participantCountInput"),
     participantCountLabel: document.getElementById("participantCountLabel"),
     thresholdInput: document.getElementById("thresholdInput"),
@@ -159,6 +168,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   let syncedState = null;
   let monthTrackerIndex = -1;
   let monthTrackerTimer = null;
+  let onboardingStep = 0;
 
   init();
 
@@ -217,6 +227,8 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     els.participantCountInput.addEventListener("change", () => {
       setParticipantCount(Number(els.participantCountInput.value));
     });
+
+    els.onboardingAction.addEventListener("click", advanceOnboarding);
 
     els.thresholdInput.addEventListener("input", () => {
       state.meta.likelyThreshold = Number(els.thresholdInput.value) / 100;
@@ -392,6 +404,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
         updateThresholdLabel();
         renderKeepScroll();
         setConnectionStatus("실시간 연결됨", "connected");
+        requestAnimationFrame(showOnboardingIfNeeded);
       }, (error) => handleFirebaseError(error, "보드를 읽지 못했습니다."));
     } catch (error) {
       handleFirebaseError(error, "Firebase 연결에 실패했습니다.");
@@ -895,6 +908,47 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     const cellWidth = getCellWidth();
     const centerIndex = Math.round((els.scroller.scrollLeft + (els.scroller.clientWidth / 2)) / cellWidth);
     els.todayButton.hidden = Math.abs(centerIndex - todayIndex) <= TODAY_BUTTON_RANGE_DAYS;
+  }
+
+  function showOnboardingIfNeeded() {
+    if (!inviteToken || els.onboardingDialog.open || hasCompletedOnboarding()) return;
+    onboardingStep = 0;
+    renderOnboardingStep();
+    showDialog(els.onboardingDialog);
+  }
+
+  function advanceOnboarding() {
+    if (onboardingStep === 0) {
+      onboardingStep = 1;
+      renderOnboardingStep();
+      return;
+    }
+    try {
+      localStorage.setItem(onboardingKey, "done");
+    } catch (_) {
+      // The tutorial can safely reappear when persistent storage is unavailable.
+    }
+    els.onboardingDialog.close();
+  }
+
+  function hasCompletedOnboarding() {
+    try {
+      return localStorage.getItem(onboardingKey) === "done";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function renderOnboardingStep() {
+    const isTapStep = onboardingStep === 0;
+    els.onboardingStep.textContent = isTapStep ? "1 / 2" : "2 / 2";
+    els.onboardingTitle.textContent = isTapStep ? "날짜 칸을 눌러보세요" : "여러 날짜는 드래그로 바꿔요";
+    els.onboardingDescription.textContent = isTapStep
+      ? "클릭할 때마다 빈칸, ○, ×, △ 순서로 상태가 바뀝니다."
+      : "같은 상태로 바꾸고 싶은 날짜들을 드래그하면 한 번에 적용됩니다.";
+    els.onboardingAction.textContent = isTapStep ? "다음" : "시작하기";
+    els.tapTutorial.hidden = !isTapStep;
+    els.dragTutorial.hidden = isTapStep;
   }
 
   function scrollTodayIntoView() {
