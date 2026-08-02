@@ -11,8 +11,6 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   const DEFAULT_THRESHOLD = 0.8;
   const DEFAULT_PARTICIPANTS = 6;
   const MAX_PARTICIPANTS = 12;
-  const LONG_PRESS_MS = 360;
-  const TAP_MOVE_PX = 8;
   const RANGE_LIMIT_DAYS = 180;
   const DATE_PAST_DAYS = 365;
   const DATE_FUTURE_DAYS = 730;
@@ -94,6 +92,8 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     banner: document.getElementById("statusBanner"),
     scroller: document.getElementById("calendarScroller"),
     grid: document.getElementById("calendarGrid"),
+    previousDatesButton: document.getElementById("previousDatesButton"),
+    nextDatesButton: document.getElementById("nextDatesButton"),
     todayButton: document.getElementById("todayButton"),
     shareButton: document.getElementById("shareButton"),
     settingsButton: document.getElementById("settingsButton"),
@@ -117,7 +117,6 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   let visibleDates = new Set();
   let gesture = null;
   let toastTimer = null;
-  let scrollTimer = null;
   let namePersistTimer = null;
   let summaryRefreshFrame = null;
   let pendingConfirmDate = null;
@@ -162,6 +161,9 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     els.todayButton.addEventListener("click", () => {
       els.scroller.scrollTo({ left: getTodayScrollLeft(), behavior: "smooth" });
     });
+
+    els.previousDatesButton.addEventListener("click", () => moveDates(-1));
+    els.nextDatesButton.addEventListener("click", () => moveDates(1));
 
     els.shareButton.addEventListener("click", copyShareLink);
     els.settingsButton.addEventListener("click", () => {
@@ -430,12 +432,16 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     els.grid.style.gridTemplateColumns = `var(--name-col) repeat(${dates.length}, var(--cell))`;
 
     const html = [];
-    html.push(`<div class="name-corner"><span>${escapeHtml(getVisibleMonthLabel())}</span></div>`);
+    html.push(`<div class="name-corner"><span>${escapeHtml(getVisibleMonthLabel())}</span><small>칸 클릭마다<br />표시 변경</small></div>`);
     dates.forEach((date) => html.push(renderDateHeader(date)));
 
     activeParticipants.forEach((participant) => {
+      html.push(renderDragRailLabel());
+      dates.forEach((date) => html.push(renderDragRail(participant, date)));
       html.push(renderParticipantLabel(participant));
       dates.forEach((date) => html.push(renderScheduleCell(participant, date)));
+      html.push(renderDragRailLabel());
+      dates.forEach((date) => html.push(renderDragRail(participant, date)));
     });
 
     html.push(`<div class="summary-label">집계</div>`);
@@ -471,6 +477,15 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
         <input class="name-input" data-action="rename" data-participant="${participant.id}" maxlength="12" value="${name}" placeholder="친구 이름" aria-label="참여자 이름" />
         <button class="row-menu" type="button" data-action="deactivate" data-participant="${participant.id}" aria-label="${name || "빈 행"} 삭제">×</button>
       </div>`;
+  }
+
+  function renderDragRailLabel() {
+    return `<div class="drag-rail-label" aria-hidden="true">↔</div>`;
+  }
+
+  function renderDragRail(participant, date) {
+    return `<div class="drag-rail" data-participant="${participant.id}" data-date="${date.iso}"
+      role="presentation" aria-label="${escapeHtml(participant.name || "친구")} ${escapeHtml(date.ariaLabel)} 날짜 조정 레일"></div>`;
   }
 
   function renderScheduleCell(participant, date) {
@@ -536,6 +551,11 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   }
 
   function onGridClick(event) {
+    const scheduleCell = event.target.closest(".schedule-cell");
+    if (scheduleCell) {
+      cycleStatus(scheduleCell.dataset.participant, scheduleCell.dataset.date);
+      return;
+    }
     const actionEl = event.target.closest("[data-action]");
     if (!actionEl) return;
     const action = actionEl.dataset.action;
@@ -549,62 +569,41 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   }
 
   function onPointerDown(event) {
-    const cell = event.target.closest(".schedule-cell");
-    if (!cell || event.button > 0) return;
-    const status = cell.dataset.status || null;
+    const rail = event.target.closest(".drag-rail");
+    if (!rail || event.button > 0) return;
+    const status = getStatus(rail.dataset.participant, rail.dataset.date);
+    if (!status) {
+      showToast("먼저 위 칸을 눌러 ○, × 또는 △를 고른 뒤 드래그하세요.");
+      return;
+    }
+    event.preventDefault();
+    rail.setPointerCapture(event.pointerId);
     gesture = {
       pointerId: event.pointerId,
-      participantId: cell.dataset.participant,
-      startDate: cell.dataset.date,
-      lastDate: cell.dataset.date,
-      status,
-      startX: event.clientX,
-      startY: event.clientY,
-      startTime: Date.now(),
-      mode: "pending",
-      timer: null
+      participantId: rail.dataset.participant,
+      startDate: rail.dataset.date,
+      lastDate: rail.dataset.date,
+      status
     };
-    gesture.timer = window.setTimeout(() => {
-      if (!gesture || gesture.pointerId !== event.pointerId || !gesture.status) return;
-      gesture.mode = "painting";
-      cell.setPointerCapture(event.pointerId);
-      if (navigator.vibrate) navigator.vibrate(12);
-      updatePaintPreview();
-    }, LONG_PRESS_MS);
+    if (navigator.vibrate) navigator.vibrate(10);
+    updatePaintPreview();
   }
 
   function onPointerMove(event) {
     if (!gesture || gesture.pointerId !== event.pointerId) return;
-    const distance = getDistance(event.clientX, event.clientY, gesture.startX, gesture.startY);
-    if (gesture.mode === "pending" && distance > TAP_MOVE_PX) {
-      window.clearTimeout(gesture.timer);
-      if (!gesture.status || Date.now() - gesture.startTime < LONG_PRESS_MS) {
-        gesture = null;
-        return;
-      }
-    }
-    if (gesture && gesture.mode === "painting") {
-      event.preventDefault();
-      const target = document.elementFromPoint(event.clientX, event.clientY);
-      const cell = target && target.closest ? target.closest(".schedule-cell") : null;
-      if (cell && cell.dataset.participant === gesture.participantId) {
-        gesture.lastDate = cell.dataset.date;
-        updatePaintPreview();
-      }
-      updateAutoScroll(event.clientX);
+    event.preventDefault();
+    const target = document.elementFromPoint(event.clientX, event.clientY);
+    const rail = target && target.closest ? target.closest(".drag-rail") : null;
+    if (rail && rail.dataset.participant === gesture.participantId) {
+      gesture.lastDate = rail.dataset.date;
+      updatePaintPreview();
     }
   }
 
   function onPointerUp(event) {
     if (!gesture || gesture.pointerId !== event.pointerId) return;
-    window.clearTimeout(gesture.timer);
-    stopAutoScroll();
     const current = gesture;
-    const distance = getDistance(event.clientX, event.clientY, current.startX, current.startY);
-    const isTap = current.mode === "pending" && distance <= TAP_MOVE_PX;
-    if (isTap) {
-      cycleStatus(current.participantId, current.startDate);
-    } else if (current.mode === "painting") {
+    if (current.startDate !== current.lastDate) {
       applyPaintRange(current.participantId, current.startDate, current.lastDate, current.status);
     }
     clearPaintPreview();
@@ -613,8 +612,6 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
   function cancelGesture() {
     if (!gesture) return;
-    window.clearTimeout(gesture.timer);
-    stopAutoScroll();
     clearPaintPreview();
     gesture = null;
   }
@@ -833,26 +830,9 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     els.grid.querySelectorAll(".paint-preview").forEach((cell) => cell.classList.remove("paint-preview"));
   }
 
-  function updateAutoScroll(pointerX) {
-    const rect = els.scroller.getBoundingClientRect();
-    const edge = 54;
-    let speed = 0;
-    if (pointerX < rect.left + edge) speed = -Math.ceil((rect.left + edge - pointerX) / 6);
-    if (pointerX > rect.right - edge) speed = Math.ceil((pointerX - (rect.right - edge)) / 6);
-    if (!speed) {
-      stopAutoScroll();
-      return;
-    }
-    if (scrollTimer) return;
-    scrollTimer = window.setInterval(() => {
-      els.scroller.scrollLeft += speed;
-    }, 16);
-  }
-
-  function stopAutoScroll() {
-    if (!scrollTimer) return;
-    window.clearInterval(scrollTimer);
-    scrollTimer = null;
+  function moveDates(direction) {
+    const distance = Math.max(getCellWidth() * 7, els.scroller.clientWidth - getNameWidth());
+    els.scroller.scrollBy({ left: direction * distance, behavior: "smooth" });
   }
 
   function onScroll() {
@@ -989,10 +969,6 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
   function createId(prefix) {
     return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
-  }
-
-  function getDistance(x1, y1, x2, y2) {
-    return Math.hypot(x1 - x2, y1 - y2);
   }
 
   function updateThresholdLabel() {
