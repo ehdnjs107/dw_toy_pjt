@@ -7,6 +7,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
   const STORAGE_PREFIX = "dw-friends-calendar:";
   const CHANNEL_NAME = "dw-friends-calendar-sync";
+  const APP_VERSION = "20260803-2";
   const DEFAULT_TITLE = "친구 약속 잡기";
   const DEFAULT_THRESHOLD = 0.8;
   const DEFAULT_PARTICIPANTS = 6;
@@ -1009,6 +1010,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   async function copyShareLink() {
     const url = new URL(window.location.href);
     url.searchParams.set("board", boardId);
+    url.searchParams.set("v", APP_VERSION);
     try {
       await navigator.clipboard.writeText(url.toString());
       showToast("공유 링크를 복사했습니다.");
