@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>친구 일정 조율 캘린더</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <label class="board-label" for="boardTitle">모임 이름</label>
+        <input id="boardTitle" class="board-title" maxlength="28" value="친구 약속 잡기" aria-label="모임 이름" />
+      </div>
+      <div class="top-actions">
+        <span id="connectionStatus" class="connection connected">연결됨</span>
+        <button id="shareButton" class="icon-text-button" type="button" aria-label="공유 링크 복사">공유</button>
+        <button id="settingsButton" class="icon-button" type="button" aria-label="설정 열기">⚙</button>
+      </div>
+    </header>
+
+    <section id="statusBanner" class="status-banner" hidden>
+      저장소가 이 기기 안에만 있습니다. Firebase 설정을 연결하면 여러 사람이 같은 보드를 볼 수 있습니다.
+    </section>
+
+    <main class="calendar-shell" aria-label="친구 일정 조율표">
+      <div id="calendarScroller" class="calendar-scroller">
+        <div id="calendarGrid" class="calendar-grid"></div>
+      </div>
+    </main>
+
+    <button id="todayButton" class="today-button" type="button" hidden>오늘로</button>
+  </div>
+
+  <dialog id="confirmDialog" class="modal">
+    <form method="dialog" class="modal-panel">
+      <div class="modal-kicker">약속 확정</div>
+      <h2 id="confirmTitle">약속을 확정할까요?</h2>
+      <p id="confirmSummary"></p>
+      <div id="maybeList" class="maybe-list"></div>
+      <div class="modal-actions">
+        <button class="secondary-button" value="cancel">취소</button>
+        <button id="confirmAction" class="primary-button" value="confirm">약속 확정</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="cancelDialog" class="modal">
+    <form method="dialog" class="modal-panel">
+      <div class="modal-kicker">확정 취소</div>
+      <h2 id="cancelTitle">확정을 취소할까요?</h2>
+      <p>취소하면 현재 참석 현황을 기준으로 다시 판정됩니다.</p>
+      <div class="modal-actions">
+        <button class="secondary-button" value="cancel">돌아가기</button>
+        <button id="cancelAction" class="danger-button" value="confirm">확정 취소</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="settingsDialog" class="modal">
+    <form method="dialog" class="modal-panel">
+      <div class="modal-kicker">설정</div>
+      <h2>참여자 관리</h2>
+      <p>기본 6명에서 시작하며 최대 12명까지 추가할 수 있습니다. 이름이 비어 있는 행은 집계에서 제외됩니다.</p>
+      <label class="threshold-control">
+        <span>유력 기준</span>
+        <input id="thresholdInput" type="range" min="50" max="100" step="5" />
+        <strong id="thresholdLabel">80%</strong>
+      </label>
+      <div class="modal-actions">
+        <button class="primary-button" value="confirm">닫기</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="stampLayer" class="stamp-layer" aria-hidden="true"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

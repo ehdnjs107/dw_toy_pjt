@@ -102,6 +102,7 @@ git push
 | 가상공중정원 | /dw_toy_pjt/skygarden/ | 공원 안내 (역사, 이용안내, 약도, 오시는길) |
 | 레시피 목록 | /dw_toy_pjt/recipe/ | 요리 레시피 모음 |
 | 오므라이스 | /dw_toy_pjt/recipe/omurice.html | 오므라이스 레시피 상세 |
+| 친구 일정 조율 캘린더 | /dw_toy_pjt/friends-calendar/ | 친구별 가능 날짜를 ○, ×, △로 조율하는 가로형 캘린더 |
 
 ---
 
