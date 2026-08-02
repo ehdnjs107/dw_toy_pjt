@@ -571,7 +571,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
       participantId: cell.dataset.participant,
       startDate: cell.dataset.date,
       lastDate: cell.dataset.date,
-      status: getStatus(cell.dataset.participant, cell.dataset.date) || "yes",
+      status: getStatus(cell.dataset.participant, cell.dataset.date),
       moved: false
     };
   }
