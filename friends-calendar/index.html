@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>친구 일정 조율 캘린더</title>
-  <link rel="stylesheet" href="style.css?v=20260803-2" />
+  <link rel="stylesheet" href="style.css?v=20260803-3" />
 </head>
 <body>
   <div class="app-shell">
@@ -29,8 +29,14 @@
           <strong><span aria-hidden="true">↔</span> 드래그하여 날짜 조정 <span aria-hidden="true">↔</span></strong>
         </div>
       </section>
-      <div id="calendarScroller" class="calendar-scroller">
-        <div id="calendarGrid" class="calendar-grid"></div>
+      <div class="calendar-stage">
+        <div id="calendarScroller" class="calendar-scroller">
+          <div id="calendarGrid" class="calendar-grid"></div>
+        </div>
+        <div id="monthTracker" class="month-tracker" aria-live="polite">
+          <span id="monthTrackerCurrent" class="month-tracker-label"></span>
+          <span id="monthTrackerNext" class="month-tracker-label month-tracker-next" aria-hidden="true"></span>
+        </div>
       </div>
       <section id="bottomDateDrag" class="drag-guide drag-guide-bottom" aria-label="날짜 조정 바">
         <div class="drag-guide-copy">
@@ -91,6 +97,6 @@
   <div id="stampLayer" class="stamp-layer" aria-hidden="true"></div>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
-  <script type="module" src="app.js?v=20260803-2"></script>
+  <script type="module" src="app.js?v=20260803-3"></script>
 </body>
 </html>

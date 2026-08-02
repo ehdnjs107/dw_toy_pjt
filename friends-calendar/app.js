@@ -7,7 +7,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
   const STORAGE_PREFIX = "dw-friends-calendar:";
   const CHANNEL_NAME = "dw-friends-calendar-sync";
-  const APP_VERSION = "20260803-2";
+  const APP_VERSION = "20260803-3";
   const DEFAULT_TITLE = "친구 약속 잡기";
   const DEFAULT_THRESHOLD = 0.8;
   const DEFAULT_PARTICIPANTS = 6;
@@ -24,37 +24,60 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   };
   const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
   const HOLIDAYS = {
+    "2025-08-15": "광복절",
+    "2025-10-03": "개천절",
+    "2025-10-05": "추석 연휴",
+    "2025-10-06": "추석",
+    "2025-10-07": "추석 연휴",
+    "2025-10-08": "추석 대체공휴일",
+    "2025-10-09": "한글날",
+    "2025-12-25": "성탄절",
     "2026-01-01": "신정",
     "2026-02-16": "설날 연휴",
     "2026-02-17": "설날",
     "2026-02-18": "설날 연휴",
     "2026-03-01": "삼일절",
     "2026-03-02": "삼일절 대체공휴일",
+    "2026-05-01": "노동절",
     "2026-05-05": "어린이날",
     "2026-05-24": "부처님오신날",
+    "2026-05-25": "부처님오신날 대체공휴일",
     "2026-06-06": "현충일",
+    "2026-07-17": "제헌절",
     "2026-08-15": "광복절",
+    "2026-08-17": "광복절 대체공휴일",
     "2026-09-24": "추석 연휴",
     "2026-09-25": "추석",
     "2026-09-26": "추석 연휴",
     "2026-10-03": "개천절",
+    "2026-10-05": "개천절 대체공휴일",
     "2026-10-09": "한글날",
     "2026-12-25": "성탄절",
+    "2026-12-27": "성탄절 대체공휴일",
     "2027-01-01": "신정",
     "2027-02-06": "설날 연휴",
     "2027-02-07": "설날",
     "2027-02-08": "설날 연휴",
+    "2027-02-09": "설날 대체공휴일",
     "2027-03-01": "삼일절",
+    "2027-05-01": "노동절",
+    "2027-05-03": "노동절 대체공휴일",
     "2027-05-05": "어린이날",
     "2027-05-13": "부처님오신날",
     "2027-06-06": "현충일",
+    "2027-07-17": "제헌절",
+    "2027-07-19": "제헌절 대체공휴일",
     "2027-08-15": "광복절",
+    "2027-08-16": "광복절 대체공휴일",
     "2027-09-14": "추석 연휴",
     "2027-09-15": "추석",
     "2027-09-16": "추석 연휴",
     "2027-10-03": "개천절",
+    "2027-10-04": "개천절 대체공휴일",
     "2027-10-09": "한글날",
+    "2027-10-11": "한글날 대체공휴일",
     "2027-12-25": "성탄절",
+    "2027-12-27": "성탄절 대체공휴일",
     "2028-01-01": "신정",
     "2028-01-26": "설날 연휴",
     "2028-01-27": "설날",
@@ -112,6 +135,9 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     participantCountLabel: document.getElementById("participantCountLabel"),
     thresholdInput: document.getElementById("thresholdInput"),
     thresholdLabel: document.getElementById("thresholdLabel"),
+    monthTracker: document.getElementById("monthTracker"),
+    monthTrackerCurrent: document.getElementById("monthTrackerCurrent"),
+    monthTrackerNext: document.getElementById("monthTrackerNext"),
     stampLayer: document.getElementById("stampLayer"),
     toast: document.getElementById("toast")
   };
@@ -131,6 +157,8 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
   let firebaseUser = null;
   let firebaseReady = false;
   let syncedState = null;
+  let monthTrackerIndex = -1;
+  let monthTrackerTimer = null;
 
   init();
 
@@ -142,6 +170,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     updateParticipantCountLabel();
     updateThresholdLabel();
     render();
+    updateMonthTracker(false);
     attachEvents();
     requestAnimationFrame(scrollTodayIntoView);
     if (inviteToken) connectFirebase();
@@ -452,8 +481,8 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
     const html = [];
     html.push(`<div class="month-corner" aria-hidden="true"></div>`);
-    html.push(...renderMonthHeaders());
-    html.push(`<div class="name-corner">이름</div>`);
+    html.push(`<div class="month-spacer" style="grid-column: span ${dates.length}" aria-hidden="true"></div>`);
+    html.push(`<div class="name-corner">날짜</div>`);
     dates.forEach((date) => html.push(renderDateHeader(date)));
 
     activeParticipants.forEach((participant) => {
@@ -468,26 +497,10 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     updateTodayButton();
   }
 
-  function renderMonthHeaders() {
-    const months = [];
-    dates.forEach((date) => {
-      const key = `${date.year}-${date.month}`;
-      const lastMonth = months[months.length - 1];
-      if (!lastMonth || lastMonth.key !== key) {
-        months.push({ key, year: date.year, month: date.month, days: 1 });
-      } else {
-        lastMonth.days += 1;
-      }
-    });
-    return months.map((month) => `
-      <div class="month-cell" style="grid-column: span ${month.days}" role="columnheader">
-        ${month.year}년 ${month.month}월
-      </div>`);
-  }
-
   function renderDateHeader(date) {
     const classes = ["date-cell"];
     if (date.isToday) classes.push("today");
+    if (date.isSaturday) classes.push("saturday");
     if (date.isHoliday) classes.push("holiday");
     if (date.day === 1) classes.push("month-start");
     const holidayLabel = date.holidayName ? `<span class="holiday-dot" title="${escapeHtml(date.holidayName)}"></span>` : "";
@@ -512,6 +525,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     const summary = calculateSummary(date.iso);
     const classes = ["schedule-cell"];
     if (status) classes.push(`status-${status}`);
+    if (date.isSaturday) classes.push("is-saturday");
     if (date.isHoliday) classes.push("is-holiday");
     if (summary.judgement === "유력") classes.push("is-likely");
     if (summary.isConfirmed) classes.push("is-confirmed");
@@ -872,6 +886,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
   function onScroll() {
     updateTodayButton();
+    updateMonthTracker();
   }
 
   function updateTodayButton() {
@@ -887,6 +902,39 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     initialScrollDone = true;
     els.scroller.scrollLeft = getTodayScrollLeft();
     updateTodayButton();
+    updateMonthTracker();
+  }
+
+  function updateMonthTracker(animate = true) {
+    if (!els.monthTrackerCurrent || !dates.length) return;
+    const cellWidth = getCellWidth();
+    const centerIndex = Math.max(0, Math.min(
+      dates.length - 1,
+      Math.round((els.scroller.scrollLeft + (els.scroller.clientWidth / 2)) / cellWidth)
+    ));
+    const date = dates[centerIndex];
+    const label = `${date.year}년 ${date.month}월`;
+
+    if (monthTrackerIndex < 0 || !animate) {
+      monthTrackerIndex = centerIndex;
+      els.monthTrackerCurrent.textContent = label;
+      return;
+    }
+
+    const currentDate = dates[monthTrackerIndex];
+    if (currentDate.year === date.year && currentDate.month === date.month) return;
+
+    window.clearTimeout(monthTrackerTimer);
+    els.monthTracker.classList.remove("is-transitioning", "moving-forward", "moving-backward");
+    els.monthTrackerNext.textContent = label;
+    els.monthTracker.classList.add(centerIndex > monthTrackerIndex ? "moving-forward" : "moving-backward");
+    requestAnimationFrame(() => els.monthTracker.classList.add("is-transitioning"));
+    monthTrackerIndex = centerIndex;
+    monthTrackerTimer = window.setTimeout(() => {
+      els.monthTrackerCurrent.textContent = label;
+      els.monthTrackerNext.textContent = "";
+      els.monthTracker.classList.remove("is-transitioning", "moving-forward", "moving-backward");
+    }, 280);
   }
 
   function getTodayScrollLeft() {
@@ -915,6 +963,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
       const iso = toIsoDate(date);
       const holidayName = HOLIDAYS[iso] || "";
       const isSunday = date.getDay() === 0;
+      const isSaturday = date.getDay() === 6;
       return {
         date,
         iso,
@@ -923,6 +972,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
         day: date.getDate(),
         weekday: WEEKDAYS[date.getDay()],
         isToday: iso === toIsoDate(today),
+        isSaturday,
         isHoliday: isSunday || Boolean(holidayName),
         holidayName: holidayName || (isSunday ? "일요일" : ""),
         ariaLabel: `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${WEEKDAYS[date.getDay()]}요일${holidayName ? `, ${holidayName}` : ""}`
