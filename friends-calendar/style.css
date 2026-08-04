@@ -421,6 +421,19 @@ button { cursor: pointer; }
 .summary-cell.likely .summary-judgement { color: var(--green); }
 .summary-cell.confirmed { box-shadow: inset 0 0 0 2px #99504d; background: #3a2020; }
 .summary-cell.confirmed .summary-judgement { color: var(--red); }
+.summary-cell.confirmed .confirmed-stamp {
+  min-width: 30px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--stamp);
+  border-radius: 2px;
+  color: var(--stamp);
+  font-size: 10px;
+  font-weight: 950;
+  line-height: 1;
+  transform: rotate(-7deg);
+}
 .maybe-count { color: var(--amber); font-size: 9px; font-weight: 900; }
 
 .today-button {

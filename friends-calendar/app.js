@@ -7,7 +7,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
 
   const STORAGE_PREFIX = "dw-friends-calendar:";
   const CHANNEL_NAME = "dw-friends-calendar-sync";
-  const APP_VERSION = "20260803-8";
+  const APP_VERSION = "20260804-1";
   const ONBOARDING_VERSION = "3";
   const DEFAULT_TITLE = "친구 약속 잡기";
   const DEFAULT_THRESHOLD = 0.8;
@@ -565,7 +565,7 @@ import { getDatabase, get, onValue, ref, serverTimestamp, set, update } from "ht
     return `
       <div class="${classes.join(" ")}" data-date="${date.iso}" ${buttonAttr}>
         <span class="summary-count">${summary.possible}/${summary.total}</span>
-        <span class="summary-judgement">${summary.isConfirmed ? "확정" : summary.judgement}</span>
+        <span class="summary-judgement${summary.isConfirmed ? " confirmed-stamp" : ""}">${summary.isConfirmed ? "확정" : summary.judgement}</span>
         ${maybe}
       </div>`;
   }
